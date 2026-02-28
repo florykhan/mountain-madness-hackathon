@@ -414,3 +414,80 @@ def demo_dashboard():
         monthly_budget=1800.0,
         spent_so_far=620.0,
     )
+
+
+@app.get("/api/demo/dashboard-ai")
+def demo_dashboard_ai():
+    """
+    Gemini-enhanced demo dashboard: runs the full pipeline, then asks
+    Gemini to generate a natural-language weekly brief from the data.
+    Returns both structured data and the AI summary.
+    """
+    import os
+
+    from google import genai as genai_client
+
+    orchestrator = _get_orchestrator("demo-ai")
+    pipeline = orchestrator.run_pipeline(
+        raw_events=_MOCK_CALENDAR_EVENTS,
+        monthly_budget=1800.0,
+        spent_so_far=620.0,
+    )
+
+    # Build a concise prompt with the pipeline data
+    events_summary = "\n".join(
+        f"- {e['title']}: ${e['predictedSpend']:.0f} ({e['category']})"
+        for e in pipeline["events"]
+    )
+    insights_summary = "\n".join(
+        f"- [{i['type']}] {i['title']}: {i['description']}"
+        for i in pipeline["insights"]
+    )
+    actions_summary = "\n".join(
+        f"- {a['label']} ({a['impact']})"
+        for a in pipeline["forecast"].get("recommendedActions", [])
+    )
+
+    prompt = f"""\
+You are FutureSpend, a sharp and friendly financial co-pilot.
+
+Here is the user's week at a glance:
+
+UPCOMING EVENTS:
+{events_summary}
+
+7-DAY FORECAST:
+- Total predicted spend: ${pipeline['forecast']['next7DaysTotal']:.0f}
+- Remaining budget: ${pipeline['forecast']['remainingBudget']:.0f} of ${pipeline['forecast']['monthlyBudget']:.0f}
+- Risk level: {pipeline['forecast']['riskScore']}
+
+INSIGHTS DETECTED:
+{insights_summary}
+
+RECOMMENDED ACTIONS:
+{actions_summary}
+
+Write a short, punchy weekly financial brief (3-5 sentences). Be specific — \
+reference actual events and dollar amounts. End with one concrete action the \
+user should take today. No bullet points, just flowing text. Keep it under 100 words."""
+
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY", "")
+
+    ai_summary = None
+    if api_key:
+        try:
+            client = genai_client.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt,
+            )
+            ai_summary = response.text
+        except Exception as e:
+            ai_summary = f"[Gemini unavailable: {e}]"
+    else:
+        ai_summary = "[Set GEMINI_API_KEY in .env to enable AI summaries]"
+
+    return {
+        **pipeline,
+        "aiSummary": ai_summary,
+    }
