@@ -20,7 +20,8 @@ def generate_challenge(predict_total,user_history=None):
     else:
         savFactor=0.9
     
-    goal=round(predict_total*savFactor,2)
+    blended=0.7*predict_total+0.3*avgWeeklySpending
+    goal=round(blended*savFactor,2)
 
     basePoints=500
     difficulty_bonus=int((1-savFactor)*1000)
