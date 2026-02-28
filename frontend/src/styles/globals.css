@@ -18,9 +18,19 @@
   }
 }
 
+html {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
+  margin: 0;
+  padding: 0;
+  min-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Fintech-style card shadows */
