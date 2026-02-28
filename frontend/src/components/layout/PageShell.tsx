@@ -20,9 +20,9 @@ export function PageShell({ children, withSidebar = true }: PageShellProps) {
   return (
     <>
       <Navbar />
-      <div className="flex min-h-[calc(100vh-3.5rem)]">
+      <div className="flex min-h-[calc(100vh-3.5rem)] bg-app-bg">
         <Sidebar />
-        <main className="flex-1 overflow-auto bg-slate-50/30">{children}</main>
+        <main className="flex-1 overflow-auto bg-app-bg">{children}</main>
       </div>
     </>
   );

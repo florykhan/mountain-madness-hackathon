@@ -27,6 +27,11 @@ const config: Config = {
           amber: "#f59e0b",
           violet: "#8b5cf6",
         },
+        app: {
+          bg: "#f2f7f5",
+          surface: "#ffffff",
+          sidebar: "#eef4f2",
+        },
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", "system-ui", "sans-serif"],

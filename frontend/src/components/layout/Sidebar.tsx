@@ -25,7 +25,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-56 flex-shrink-0 border-r border-slate-200 bg-slate-50/50 md:block">
+    <aside className="hidden w-56 flex-shrink-0 border-r border-slate-200/80 bg-app-sidebar md:block">
       <nav className="flex flex-col gap-0.5 p-2 pt-4">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
