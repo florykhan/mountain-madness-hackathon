@@ -9,9 +9,7 @@ import {
   MessageCircle,
   Settings,
   Home,
-  Wallet,
 } from "lucide-react";
-import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -28,11 +26,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-56 flex-shrink-0 border-r border-slate-200 bg-slate-50/50 md:block">
-      <div className="flex h-14 items-center gap-2 border-b border-slate-200 px-4">
-        <Wallet className="h-6 w-6 text-primary-600" />
-        <span className="font-semibold text-slate-900">{APP_NAME}</span>
-      </div>
-      <nav className="flex flex-col gap-0.5 p-2">
+      <nav className="flex flex-col gap-0.5 p-2 pt-4">
         {LINKS.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
           return (
