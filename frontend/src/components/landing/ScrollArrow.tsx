@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const DELAY_MS = 2000;
-const SCROLL_OFFSET = 80;
+const SCROLL_OFFSET = 20;
 
 export function ScrollArrow({ targetId }: { targetId: string }) {
   const [visible, setVisible] = useState(false);
