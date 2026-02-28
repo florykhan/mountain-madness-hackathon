@@ -12,7 +12,7 @@ export function PageShell({ children, withSidebar = true }: PageShellProps) {
     return (
       <>
         <Navbar />
-        <main className="w-full min-w-0 bg-slate-950">{children}</main>
+        <main className="w-full min-w-0 bg-transparent pt-14">{children}</main>
       </>
     );
   }

@@ -23,10 +23,10 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b backdrop-blur",
+        "top-0 z-50 w-full border-b backdrop-blur supports-[backdrop-filter]:backdrop-blur-md",
         isHome
-          ? "border-slate-800 bg-slate-900/95 supports-[backdrop-filter]:bg-slate-900/90"
-          : "border-slate-200 bg-white/95 supports-[backdrop-filter]:bg-white/80"
+          ? "fixed left-0 right-0 border-white/10 bg-black/20 bg-slate-900/30"
+          : "sticky border-slate-200 bg-white/95 supports-[backdrop-filter]:bg-white/80"
       )}
     >
       <div className="container flex h-14 items-center justify-between px-4">
