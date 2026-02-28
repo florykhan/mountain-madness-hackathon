@@ -29,7 +29,7 @@ export function Navbar() {
           : "sticky border-slate-200 bg-white/95 supports-[backdrop-filter]:bg-white/80"
       )}
     >
-      <div className="container flex h-14 items-center justify-between px-4">
+      <div className="flex h-14 w-full items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
           className={cn("flex items-center gap-2 font-semibold", isHome ? "text-white" : "text-slate-900")}
@@ -48,10 +48,10 @@ export function Navbar() {
                   "rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   isActive
                     ? isHome
-                      ? "bg-white/10 text-white"
+                      ? "bg-white/5 text-white"
                       : "bg-primary-50 text-primary-700"
                     : isHome
-                      ? "text-slate-300 hover:bg-white/10 hover:text-white"
+                      ? "text-slate-300 hover:bg-white/5 hover:text-white"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 )}
               >
