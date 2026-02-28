@@ -78,14 +78,14 @@ export default function HomePage() {
               <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/dashboard"
-                  className="group inline-flex h-12 min-w-[180px] items-center justify-center gap-2.5 rounded-xl bg-white px-6 text-base font-semibold text-slate-900 shadow-[0_4px_24px_rgba(0,0,0,0.25)] transition-all duration-200 hover:scale-[1.02] hover:bg-slate-50 hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-slate-900"
+                  className="group inline-flex h-12 min-w-[180px] items-center justify-center gap-2.5 rounded-xl bg-primary-100 px-6 text-base font-semibold text-primary-900 shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all duration-200 hover:bg-primary-200 hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   <Calendar className="h-5 w-5 transition-transform duration-200 group-hover:scale-105" />
                   Connect Calendar (mock)
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="group inline-flex h-12 min-w-[180px] items-center justify-center gap-2.5 rounded-xl border border-white/25 bg-white/[0.07] px-6 text-base font-semibold text-white backdrop-blur-md transition-all duration-200 hover:scale-[1.02] hover:border-white/40 hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-slate-900"
+                  className="group inline-flex h-12 min-w-[180px] items-center justify-center gap-2.5 rounded-xl border border-white/25 bg-white/[0.07] px-6 text-base font-semibold text-white backdrop-blur-md transition-all duration-200 hover:border-white/40 hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   <Upload className="h-5 w-5 transition-transform duration-200 group-hover:scale-105" />
                   Upload Transactions CSV (mock)
@@ -129,7 +129,7 @@ export default function HomePage() {
               <div className="mt-12 flex justify-center">
                 <Link
                   href="/dashboard"
-                  className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-xl bg-white px-8 text-base font-semibold text-slate-900 shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-slate-900"
+                  className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-xl bg-primary-100 px-8 text-base font-semibold text-primary-900 shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all duration-200 hover:bg-primary-200 hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   Go to Dashboard
                   <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />

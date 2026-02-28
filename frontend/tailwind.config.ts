@@ -28,9 +28,9 @@ const config: Config = {
           violet: "#8b5cf6",
         },
         app: {
-          bg: "#f2f7f5",
+          bg: "#f0f7ff",
           surface: "#ffffff",
-          sidebar: "#eef4f2",
+          sidebar: "#e8f0fe",
         },
       },
       fontFamily: {
