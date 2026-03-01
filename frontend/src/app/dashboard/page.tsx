@@ -5,14 +5,11 @@ import { SpendLineChart } from "@/components/dashboard/SpendLineChart";
 import { CategoryBreakdown } from "@/components/dashboard/CategoryBreakdown";
 import { InsightCards } from "@/components/dashboard/InsightCards";
 import { RecommendedActions } from "@/components/dashboard/RecommendedActions";
-import { fetchDemoDashboard } from "@/lib/api";
-import forecastFallback from "@/mocks/forecast.json";
-import insightsFallback from "@/mocks/insights.json";
+import forecastData from "@/mocks/forecast.json";
+import insightsData from "@/mocks/insights.json";
 
-export const dynamic = "force-dynamic";
-
-export default async function DashboardPage() {
-  let forecast: {
+export default function DashboardPage() {
+  const forecast = forecastData as {
     next7DaysTotal: number;
     remainingBudget: number;
     monthlyBudget: number;
@@ -21,18 +18,7 @@ export default async function DashboardPage() {
     byCategory: { name: string; value: number; key: string }[];
     recommendedActions?: { id: string; label: string; impact?: string; type?: string }[];
   };
-  let insights: { id: string; icon: string; title: string; description: string }[];
-
-  try {
-    const data = await fetchDemoDashboard();
-    forecast = data.forecast;
-    insights = data.insights;
-  } catch {
-    // Fallback to local mocks if backend is unreachable
-    forecast = forecastFallback as typeof forecast;
-    insights = insightsFallback as typeof insights;
-  }
-
+  const insights = insightsData as { id: string; icon: string; title: string; description: string }[];
   const actions = forecast.recommendedActions || [];
 
   return (

@@ -1,23 +1,11 @@
 import { Calendar } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { EventList } from "@/components/calendar/EventList";
-import { fetchCalendarEvents } from "@/lib/api";
-import eventsFallback from "@/mocks/events.json";
+import eventsData from "@/mocks/events.json";
 import type { CalendarEvent } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
-
-export default async function CalendarPage() {
-  let events: CalendarEvent[];
-
-  try {
-    // Fetch enriched events from backend
-    const raw = await fetchCalendarEvents();
-    events = raw as CalendarEvent[];
-  } catch {
-    // Fallback to local mocks if backend is unreachable
-    events = eventsFallback as CalendarEvent[];
-  }
+export default function CalendarPage() {
+  const events = eventsData as CalendarEvent[];
 
   return (
     <PageShell>
