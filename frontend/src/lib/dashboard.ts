@@ -30,11 +30,33 @@ export function getChallengeCurrentSpend(challenge: Challenge): number {
   return challenge.progress ?? 0;
 }
 
+export function getChallengeTarget(challenge: Challenge): number {
+  return challenge.goal;
+}
+
 export function getChallengeReward(challenge: Challenge): number {
   if (typeof challenge.reward === "number") {
     return challenge.reward;
   }
   return Math.max(250, Math.round(challenge.goal * 2.5));
+}
+
+export function formatChallengeValue(value: number, unit: string): string {
+  const rounded = Math.round(value);
+  if (unit === "CAD" || unit === "USD") {
+    return `$${rounded}`;
+  }
+  return `${rounded} ${unit}`;
+}
+
+export function getChallengeDaysRemaining(challenge: Challenge): number {
+  const deadline = challenge.deadline ?? challenge.endDate;
+  return Math.max(
+    0,
+    Math.ceil(
+      (new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    )
+  );
 }
 
 export function buildPredictionBreakdown(breakdown: ForecastCategory[]) {
@@ -94,4 +116,8 @@ export function getActiveChallenge(payload: DashboardPayload): Challenge | undef
     payload.challenges.list.find((challenge) => challenge.unit === "CAD") ??
     payload.challenges.list[0]
   );
+}
+
+export function getLeaderboardEntryPoints(entry: LeaderboardEntry): number {
+  return entry.points ?? entry.value;
 }

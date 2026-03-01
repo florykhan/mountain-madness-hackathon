@@ -28,9 +28,11 @@ import { api } from "@/lib/api";
 import { CHART_TOOLTIP_STYLE } from "@/lib/constants";
 import {
   getActiveChallenge,
-  getCurrentUserEntry,
+  getChallengeDaysRemaining,
+  getChallengeReward,
+  getChallengeTarget,
   getInitials,
-  getLeaderboardNeighbors,
+  getLeaderboardEntryPoints,
 } from "@/lib/dashboard";
 import { getStoredMonthlyBudget } from "@/lib/preferences";
 import { getDashboardTypographyVars } from "@/lib/typography";
@@ -67,6 +69,7 @@ export default function LeaderboardPage() {
   }, []);
 
   const activeChallenge = dashboard ? getActiveChallenge(dashboard) : undefined;
+  const challengeTarget = activeChallenge ? getChallengeTarget(activeChallenge) : 0;
   const extendedLeaderboard = useMemo(
     () =>
       (dashboard?.challenges.leaderboard ?? []).map((entry, index) => ({
@@ -75,12 +78,12 @@ export default function LeaderboardPage() {
         name: entry.name,
         avatar: entry.avatar ?? getInitials(entry.name),
         spent: entry.value,
-        target: activeChallenge?.goal ?? 0,
-        status: (entry.value <= (activeChallenge?.goal ?? 0) ? "under" : "over") as "under" | "over",
+        target: challengeTarget,
+        status: (entry.value <= challengeTarget ? "under" : "over") as "under" | "over",
         avatarColor: entry.color ?? ["#10A861", "#2E90FA", "#875BF7", "#F79009", "#EC2222", "#06AED4"][index % 6],
         isCurrentUser: entry.isCurrentUser || entry.name === dashboard?.profile.name,
       })),
-    [activeChallenge?.goal, dashboard]
+    [challengeTarget, dashboard]
   );
 
   const allTimeLeaderboard = dashboard?.allTimeLeaderboard ?? [];
@@ -108,19 +111,24 @@ export default function LeaderboardPage() {
     );
   };
 
-  const currentEntry = dashboard
-    ? getCurrentUserEntry(dashboard.challenges.leaderboard, dashboard.profile.name)
+  const currentEntry = extendedLeaderboard.find((entry) => entry.isCurrentUser);
+  const leader = currentEntry
+    ? extendedLeaderboard.find((entry) => entry.rank === currentEntry.rank - 1)
     : undefined;
-  const { leader, trailing } = getLeaderboardNeighbors(
-    dashboard?.challenges.leaderboard ?? [],
-    currentEntry
+  const trailing = currentEntry
+    ? extendedLeaderboard.find((entry) => entry.rank === currentEntry.rank + 1)
+    : undefined;
+  const daysRemaining = activeChallenge ? getChallengeDaysRemaining(activeChallenge) : 0;
+  const currentRemaining = Math.max(
+    0,
+    challengeTarget - (currentEntry?.spent ?? 0)
   );
-  const daysRemaining = Math.ceil(
-    ((activeChallenge?.deadline
-      ? new Date(activeChallenge.deadline).getTime()
-      : Date.now()) - Date.now()) /
-      (1000 * 60 * 60 * 24)
-  );
+  const leaderGap = leader && currentEntry
+    ? Math.max(0, currentEntry.spent - leader.spent)
+    : 0;
+  const trailingGap = trailing && currentEntry
+    ? Math.abs(trailing.spent - currentEntry.spent)
+    : 0;
 
   if (loading) {
     return (
@@ -170,7 +178,7 @@ export default function LeaderboardPage() {
                   {activeChallenge.name}
                 </h2>
                 <p className="text-base lg:text-lg text-gray-400">
-                  Target: Stay under ${activeChallenge.target} this weekend
+                  Target: Stay under ${challengeTarget} this weekend
                 </p>
               </div>
               <div className="text-right">
@@ -193,12 +201,12 @@ export default function LeaderboardPage() {
                 ))}
               </div>
               <span className="text-base text-gray-400">
-                {extendedLeaderboard.length} participants
+                {activeChallenge.participants || extendedLeaderboard.length} participants
               </span>
               <div className="ml-auto flex items-center gap-1.5">
                 <Star className="w-5 h-5 text-warning-strong fill-warning-strong" />
                 <span className="text-base lg:text-lg text-warning-strong font-semibold font-mono tabular-nums">
-                  {activeChallenge.reward} pts prize
+                  {getChallengeReward(activeChallenge)} pts prize
                 </span>
               </div>
             </div>
@@ -243,12 +251,11 @@ export default function LeaderboardPage() {
                 </div>
                 <div className="divide-y divide-white/[0.04]">
                   {extendedLeaderboard.map((participant) => {
-                    const pct = Math.round(
-                      (participant.spent / participant.target) * 100
-                    );
-                    const isCurrentUser =
-                      "isCurrentUser" in participant &&
-                      participant.isCurrentUser;
+                    const pct =
+                      participant.target > 0
+                        ? Math.round((participant.spent / participant.target) * 100)
+                        : 0;
+                    const isCurrentUser = participant.isCurrentUser;
                     const isOver = participant.status === "over";
                     return (
                       <div
@@ -377,7 +384,7 @@ export default function LeaderboardPage() {
                       <div className="flex items-center gap-1.5">
                         <Star className="w-4.5 h-4.5 text-warning-strong fill-warning-strong" />
                         <span className="text-base text-gray-200 font-semibold font-mono tabular-nums">
-                          {participant.points.toLocaleString()} pts
+                          {getLeaderboardEntryPoints(participant).toLocaleString()} pts
                         </span>
                       </div>
                     </div>
@@ -415,7 +422,7 @@ export default function LeaderboardPage() {
                     formatter={(v: number) => [`$${v}`, "Spent"]}
                   />
                   <ReferenceLine
-                    y={activeChallenge.target}
+                    y={challengeTarget}
                     stroke="#EC2222"
                     strokeDasharray="4 4"
                     strokeOpacity={0.5}
@@ -433,7 +440,7 @@ export default function LeaderboardPage() {
               </ResponsiveContainer>
               <div className="mt-3 flex items-center gap-2 text-base text-gray-500">
                 <span className="border-t-2 border-dashed border-destructive w-4" />{" "}
-                Target: ${activeChallenge.target}
+                Target: ${challengeTarget}
               </div>
             </div>
 
@@ -444,34 +451,50 @@ export default function LeaderboardPage() {
               </h3>
               <div className="flex items-center gap-4 mb-5">
                 <div className="w-14 h-14 rounded-full bg-accent-blue flex items-center justify-center text-white text-lg font-semibold">
-                  AC
+                  {getInitials(dashboard.profile.name)}
                 </div>
                 <div>
                   <p className="text-lg text-white font-bold">
-                    Rank #2 of 6
+                    {currentEntry
+                      ? `Rank #${currentEntry.rank} of ${extendedLeaderboard.length}`
+                      : "Not in the active challenge yet"}
                   </p>
                   <p className="text-base text-gray-500 font-mono tabular-nums">
-                    $85 spent · $189 remaining
+                    {currentEntry
+                      ? `$${currentEntry.spent} spent · $${currentRemaining} remaining`
+                      : `Target: $${challengeTarget}`}
                   </p>
                 </div>
               </div>
               <div className="space-y-3 text-base">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400 font-medium">
-                    vs Jordan Lee (#1)
-                  </span>
-                  <span className="text-destructive flex items-center gap-1.5 font-semibold font-mono tabular-nums text-base">
-                    <CaretUp className="w-4 h-4" /> +$23 behind
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400 font-medium">
-                    vs Sam Park (#3)
-                  </span>
-                  <span className="text-success flex items-center gap-1.5 font-semibold font-mono tabular-nums text-base">
-                    <CaretDown className="w-4 h-4" /> $49 ahead
-                  </span>
-                </div>
+                {leader ? (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 font-medium">
+                      vs {leader.name} (#{leader.rank})
+                    </span>
+                    <span className="text-destructive flex items-center gap-1.5 font-semibold font-mono tabular-nums text-base">
+                      <CaretUp className="w-4 h-4" /> +${leaderGap} behind
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-gray-400 font-medium">
+                    You&apos;re leading the current challenge.
+                  </p>
+                )}
+                {trailing ? (
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 font-medium">
+                      vs {trailing.name} (#{trailing.rank})
+                    </span>
+                    <span className="text-success flex items-center gap-1.5 font-semibold font-mono tabular-nums text-base">
+                      <CaretDown className="w-4 h-4" /> ${trailingGap} ahead
+                    </span>
+                  </div>
+                ) : currentEntry ? (
+                  <p className="text-gray-500 font-medium">
+                    No trailing competitor yet.
+                  </p>
+                ) : null}
               </div>
             </div>
 
@@ -482,9 +505,7 @@ export default function LeaderboardPage() {
                 <h3 className="text-lg font-medium text-warning">AI Tip</h3>
               </div>
               <p className="text-base text-gray-300 leading-relaxed">
-                Skip the Jazz Concert this Friday and you&apos;ll jump to{" "}
-                <strong className="text-white font-semibold">#1</strong> on the
-                leaderboard, saving $95 and putting you well under target!
+                {dashboard.leaderboardTip}
               </p>
             </div>
           </div>

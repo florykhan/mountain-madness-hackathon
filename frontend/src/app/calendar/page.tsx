@@ -159,31 +159,22 @@ function formatHour(hour: number): string {
   return `${hour} AM`;
 }
 
-/* ─── Timeline indicator (from big-calendar) ─── */
+/* ─── Current time indicator (only on today, inside grid so it scrolls correctly) ─── */
 
-function TimelineIndicator({ headerHeight }: { headerHeight: number }) {
-  const [now, setNow] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 60_000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  const visibleStart = VISIBLE_HOURS.from * 60;
-  const visibleEnd = VISIBLE_HOURS.to * 60;
-  if (minutes < visibleStart || minutes >= visibleEnd) return null;
-
-  const top = headerHeight + ((minutes - visibleStart) / 60) * HOUR_HEIGHT;
-
+function CurrentTimeIndicator({
+  minutesIntoHour,
+}: {
+  minutesIntoHour: number;
+}) {
+  const topPx = (minutesIntoHour / 60) * HOUR_HEIGHT;
   return (
     <div
-      className="pointer-events-none absolute z-30"
-      style={{ top: `${top}px`, left: "56px", right: 0 }}
+      className="pointer-events-none absolute left-0 right-0 z-10"
+      style={{ top: `${topPx}px` }}
     >
       <div className="relative flex items-center">
-        <div className="absolute -left-1.5 h-3 w-3 rounded-full bg-red-500" />
-        <div className="w-full border-t border-red-500" />
+        <div className="h-3 w-3 flex-shrink-0 rounded-full bg-red-500" />
+        <div className="min-w-0 flex-1 border-t border-red-500" />
       </div>
     </div>
   );
@@ -205,14 +196,11 @@ export default function CalendarPage() {
     "health",
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const theadRef = useRef<HTMLTableSectionElement>(null);
-  const [theadHeight, setTheadHeight] = useState(0);
+  const [now, setNow] = useState(() => new Date());
 
-  // Measure thead height so the time indicator aligns with the grid
   useEffect(() => {
-    if (theadRef.current) {
-      setTheadHeight(theadRef.current.offsetHeight);
-    }
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
   }, []);
 
   // Fetch events from API if available
@@ -304,6 +292,15 @@ export default function CalendarPage() {
       filteredEvents.filter((e) => isSameDay(parseISO(e.start), day)),
     [filteredEvents]
   );
+
+  // Current time indicator: only show when today is in the visible week
+  const todayIndex = weekDays.findIndex((d) => isToday(d));
+  const currentHour = now.getHours();
+  const minutesIntoHour = now.getMinutes();
+  const showTimeIndicator =
+    todayIndex >= 0 &&
+    currentHour >= VISIBLE_HOURS.from &&
+    currentHour < VISIBLE_HOURS.to;
 
   if (loading) {
     return (
@@ -408,7 +405,7 @@ export default function CalendarPage() {
             >
               <table className="w-full border-collapse" style={{ minWidth: 700 }}>
                 {/* Sticky day headers */}
-                <thead ref={theadRef}>
+                <thead>
                   <tr className="sticky top-0 z-20 bg-surface-1">
                     <th
                       className="w-14 min-w-[56px] border-b border-white/[0.06]"
@@ -470,6 +467,10 @@ export default function CalendarPage() {
                       {weekDays.map((day, dayIndex) => {
                         // Only render events in the first hour row to avoid duplicates
                         const isFirstHour = hourIndex === 0;
+                        const isCurrentTimeCell =
+                          showTimeIndicator &&
+                          hour === currentHour &&
+                          dayIndex === todayIndex;
 
                         return (
                           <td
@@ -483,6 +484,13 @@ export default function CalendarPage() {
                             )}
                             {/* Half-hour dashed line */}
                             <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-white/[0.06] opacity-30" />
+
+                            {/* Current time indicator — only in today's column, scrolls with grid */}
+                            {isCurrentTimeCell && (
+                              <CurrentTimeIndicator
+                                minutesIntoHour={minutesIntoHour}
+                              />
+                            )}
 
                             {/* Render all events for this day-column in the first row */}
                             {isFirstHour && (() => {
@@ -552,9 +560,6 @@ export default function CalendarPage() {
                   ))}
                 </tbody>
               </table>
-
-              {/* Current time indicator — positioned relative to scroll container */}
-              <TimelineIndicator headerHeight={theadHeight} />
             </div>
           </div>
 

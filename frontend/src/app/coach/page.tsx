@@ -14,6 +14,7 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";
 import { getStoredMonthlyBudget } from "@/lib/preferences";
+import type { CalendarEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 /* ─── Types ─── */
@@ -25,19 +26,6 @@ interface Message {
   timestamp: string;
   /** Action chips returned from the backend (e.g. "Lock $50", "Create challenge") */
   actions?: Array<{ id: string; label: string; impact: string; type: string }>;
-}
-
-interface CoachCalendarEvent {
-  id: string;
-  title: string;
-  start: string;
-  end?: string;
-  calendarType?: string;
-  location?: string;
-  attendees?: number;
-  predictedSpend?: number;
-  category?: string;
-  why?: string;
 }
 
 /* ─── Suggested prompts ─── */
@@ -99,7 +87,7 @@ export default function CoachPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [streamId, setStreamId] = useState<string | null>(null);
-  const [calendarEvents, setCalendarEvents] = useState<CoachCalendarEvent[]>([]);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [monthlyBudget, setMonthlyBudget] = useState(getStoredMonthlyBudget);
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -139,13 +127,14 @@ export default function CoachPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const storedBudget = getStoredMonthlyBudget();
 
     api
-      .getDashboard()
+      .getDashboard({ monthlyBudget: storedBudget })
       .then((data) => {
         if (cancelled) return;
         setCalendarEvents(data.events ?? []);
-        setMonthlyBudget(data.forecast?.monthlyBudget ?? getStoredMonthlyBudget());
+        setMonthlyBudget(data.forecast?.monthlyBudget ?? storedBudget);
       })
       .catch(() => {});
 

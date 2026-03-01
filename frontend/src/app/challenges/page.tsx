@@ -18,7 +18,12 @@ import { api } from "@/lib/api";
 import { getStoredMonthlyBudget } from "@/lib/preferences";
 import { getDashboardTypographyVars } from "@/lib/typography";
 import type { Challenge as DashboardChallenge, DashboardPayload } from "@/lib/types";
-import { getChallengeCurrentSpend } from "@/lib/dashboard";
+import {
+  formatChallengeValue,
+  getChallengeCurrentSpend,
+  getChallengeDaysRemaining,
+  getChallengeReward,
+} from "@/lib/dashboard";
 
 function ProgressRing({
   value,
@@ -35,7 +40,7 @@ function ProgressRing({
 }) {
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
-  const pct = Math.min(value / max, 1);
+  const pct = max > 0 ? Math.min(value / max, 1) : 0;
   const offset = circ * (1 - pct);
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
@@ -209,86 +214,94 @@ export default function ChallengesPage() {
             Active Challenges
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {activeList.map((challenge) => {
-              const current = Math.round(getChallengeCurrentSpend(challenge));
-              const target = challenge.goal;
-              const pct = target > 0 ? Math.round((current / target) * 100) : 0;
-              const remaining = target - current;
-              const isWarning = pct > 70;
-              const ringColor = isWarning ? "#F79009" : "#10A861";
-              const daysLeft = Math.max(
-                0,
-                Math.ceil(
-                  (new Date(challenge.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-                )
-              );
+            {activeList.length > 0 ? (
+              activeList.map((challenge) => {
+                const current = Math.round(getChallengeCurrentSpend(challenge));
+                const target = challenge.goal;
+                const pct = target > 0 ? Math.round((current / target) * 100) : 0;
+                const remaining = Math.max(0, target - current);
+                const isWarning = pct > 70;
+                const ringColor = isWarning ? "#F79009" : "#10A861";
+                const daysLeft = getChallengeDaysRemaining(challenge);
 
-              return (
-                <div
-                  key={challenge.id}
-                  className="bg-surface-1 border border-white/[0.06] rounded-xl p-5"
-                >
-                  <div className="flex items-start justify-between mb-5">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <Trophy className="w-5 h-5 text-accent-purple" />
-                        <h3 className="text-gray-100 font-semibold text-base">{challenge.name}</h3>
+                return (
+                  <div
+                    key={challenge.id}
+                    className="bg-surface-1 border border-white/[0.06] rounded-xl p-5"
+                  >
+                    <div className="flex items-start justify-between mb-5">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <Trophy className="w-5 h-5 text-accent-purple" />
+                          <h3 className="text-gray-100 font-semibold text-base">{challenge.name}</h3>
+                        </div>
+                        <p className="text-sm text-gray-500 font-normal">
+                          {challenge.description ?? `Target: ${formatChallengeValue(target, challenge.unit)}`}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-500 font-normal">
-                        {challenge.description ?? `Target: ${challenge.goal} ${challenge.unit}`}
-                      </p>
+                      <div className="relative flex-shrink-0 ml-4">
+                        <ProgressRing
+                          value={current}
+                          max={target}
+                          size={88}
+                          stroke={8}
+                          color={ringColor}
+                        />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                          <span className="text-sm font-semibold text-white">{pct}%</span>
+                          <span className="text-gray-500 text-xs">
+                            used
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="relative flex-shrink-0 ml-4">
-                      <ProgressRing
-                        value={current}
-                        max={target}
-                        size={88}
-                        stroke={8}
-                        color={ringColor}
-                      />
-                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-sm font-semibold text-white">{pct}%</span>
-                        <span className="text-gray-500 text-xs">
-                          used
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-base">
+                        <span className="text-gray-400 font-medium">Progress</span>
+                        <span className="font-semibold text-white font-mono tabular-nums">
+                          {formatChallengeValue(current, challenge.unit)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-base">
+                        <span className="text-gray-400 font-medium">Target</span>
+                        <span className="font-semibold text-white font-mono tabular-nums">
+                          {formatChallengeValue(target, challenge.unit)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-base">
+                        <span className="text-gray-400 font-medium">Remaining</span>
+                        <span
+                          className={`font-semibold font-mono tabular-nums ${remaining > 0 ? "text-success" : "text-destructive"}`}
+                        >
+                          {formatChallengeValue(remaining, challenge.unit)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-500 font-normal">
+                          {daysLeft > 0 ? `${daysLeft}d left` : "Ends soon"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-4 h-4 text-warning-strong fill-warning-strong" />
+                        <span className="text-sm text-warning-strong font-semibold">
+                          Earn {getChallengeReward(challenge)} pts
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-base">
-                      <span className="text-gray-400 font-medium">Spent</span>
-                      <span className="font-semibold text-white font-mono tabular-nums">${current}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-base">
-                      <span className="text-gray-400 font-medium">Target</span>
-                      <span className="font-semibold text-white font-mono tabular-nums">${target}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-base">
-                      <span className="text-gray-400 font-medium">Remaining</span>
-                      <span
-                        className={`font-semibold font-mono tabular-nums ${remaining > 0 ? "text-success" : "text-destructive"}`}
-                      >
-                        ${remaining > 0 ? remaining : 0}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-500 font-normal">
-                        {daysLeft > 0 ? `${daysLeft}d left` : "Ends soon"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-warning-strong fill-warning-strong" />
-                      <span className="text-sm text-warning-strong font-semibold">
-                        Earn {challenge.streak ? challenge.streak * 100 : 400} pts
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="md:col-span-2 bg-surface-1 border border-white/[0.06] rounded-xl p-6 text-center">
+                <p className="text-gray-300 font-medium">No active challenges right now.</p>
+                <p className="text-gray-600 text-sm mt-1">
+                  Start one from your latest forecast to turn the dashboard into a live savings target.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -299,45 +312,54 @@ export default function ChallengesPage() {
             Challenge History
           </h3>
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="divide-y divide-white/[0.04]">
-              {pastChallenges.map((challenge) => (
-                <div
-                  key={challenge.id}
-                  className="flex items-center gap-4 px-5 py-4.5 hover:bg-white/[0.02] transition-colors"
-                >
+            {pastChallenges.length > 0 ? (
+              <div className="divide-y divide-white/[0.04]">
+                {pastChallenges.map((challenge) => (
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      challenge.status === "won" ? "bg-success-muted" : "bg-destructive-muted"
-                    }`}
+                    key={challenge.id}
+                    className="flex items-center gap-4 px-5 py-4.5 hover:bg-white/[0.02] transition-colors"
                   >
-                    {challenge.status === "won" ? (
-                      <CheckCircle className="w-5.5 h-5.5 text-success" />
-                    ) : (
-                      <XCircle className="w-5.5 h-5.5 text-destructive" />
-                    )}
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        challenge.status === "won" ? "bg-success-muted" : "bg-destructive-muted"
+                      }`}
+                    >
+                      {challenge.status === "won" ? (
+                        <CheckCircle className="w-5.5 h-5.5 text-success" />
+                      ) : (
+                        <XCircle className="w-5.5 h-5.5 text-destructive" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-100">{challenge.name}</p>
+                      <p className="text-sm text-gray-600 font-mono">{challenge.month}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-base text-gray-200 font-semibold font-mono tabular-nums">
+                        ${challenge.actual} <span className="text-gray-600">/ ${challenge.target}</span>
+                      </p>
+                      {challenge.status === "won" ? (
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
+                          <span className="text-sm text-warning-strong font-semibold">+{challenge.reward} pts</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-destructive font-normal">
+                          Over by ${challenge.actual - challenge.target}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-base font-medium text-gray-100">{challenge.name}</p>
-                    <p className="text-sm text-gray-600 font-mono">{challenge.month}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-base text-gray-200 font-semibold font-mono tabular-nums">
-                      ${challenge.actual} <span className="text-gray-600">/ ${challenge.target}</span>
-                    </p>
-                    {challenge.status === "won" ? (
-                      <div className="flex items-center gap-1.5 justify-end">
-                        <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
-                        <span className="text-sm text-warning-strong font-semibold">+{challenge.reward} pts</span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-destructive font-normal">
-                        Over by ${challenge.actual - challenge.target}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 text-center">
+                <p className="text-gray-300 font-medium">No completed challenges yet.</p>
+                <p className="text-gray-600 text-sm mt-1">
+                  Finished challenges will show your result, savings, and points here.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

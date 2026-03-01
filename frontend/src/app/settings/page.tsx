@@ -1,18 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GearSix, User, Bell, ShieldCheck } from "@phosphor-icons/react";
 import { PageShell } from "@/components/layout/PageShell";
+import {
+  DEFAULT_MONTHLY_BUDGET,
+  getStoredMonthlyBudget,
+  setStoredMonthlyBudget,
+} from "@/lib/preferences";
 
 export default function SettingsPage() {
   const [name, setName] = useState("Alex Demo");
   const [email, setEmail] = useState("alex@example.com");
-  const [monthlyBudget, setMonthlyBudget] = useState("1000");
+  const [monthlyBudget, setMonthlyBudget] = useState(
+    () => String(getStoredMonthlyBudget())
+  );
   const [alertsBeforeEvents, setAlertsBeforeEvents] = useState(true);
   const [weeklySummary, setWeeklySummary] = useState(true);
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    setMonthlyBudget(String(getStoredMonthlyBudget()));
+  }, []);
+
   const handleSave = () => {
+    const parsedBudget = Number(monthlyBudget);
+    const normalizedBudget =
+      Number.isFinite(parsedBudget) && parsedBudget >= 0
+        ? parsedBudget
+        : DEFAULT_MONTHLY_BUDGET;
+    setStoredMonthlyBudget(normalizedBudget);
+    setMonthlyBudget(String(normalizedBudget));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

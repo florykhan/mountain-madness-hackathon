@@ -94,6 +94,12 @@ export default function DashboardPage() {
   const activeChallenge = dashboard ? getActiveChallenge(dashboard) : undefined;
   const activeChallenges = dashboard?.challenges.list.slice(0, 2) ?? [];
   const score = dashboard?.healthScore ?? 0;
+  const healthTrend = stats?.healthScoreTrend ?? 0;
+  const isHealthTrendPositive = healthTrend > 0;
+  const isHealthTrendNegative = healthTrend < 0;
+  const activeChallengeSpend = activeChallenge
+    ? Math.round(getChallengeCurrentSpend(activeChallenge))
+    : 0;
   const spendingHistoryData = useMemo(
     () =>
       (dashboard?.spendingHistory ?? []).map((point) => ({
@@ -181,9 +187,29 @@ export default function DashboardPage() {
                 className="text-gray-500"
                 aria-hidden="true"
               />
-              <span className="flex items-center gap-1 text-sm text-success font-mono font-medium">
-                <TrendUp size={14} weight="bold" aria-hidden="true" />+
-                {stats.healthScoreTrend}
+              <span
+                className={`flex items-center gap-1 text-sm font-mono font-medium ${
+                  isHealthTrendPositive
+                    ? "text-success"
+                    : isHealthTrendNegative
+                    ? "text-destructive"
+                    : "text-gray-500"
+                }`}
+              >
+                {isHealthTrendNegative ? (
+                  <ArrowRight
+                    size={14}
+                    weight="bold"
+                    aria-hidden="true"
+                    className="rotate-90"
+                  />
+                ) : isHealthTrendPositive ? (
+                  <TrendUp size={14} weight="bold" aria-hidden="true" />
+                ) : (
+                  <ArrowRight size={14} weight="bold" aria-hidden="true" />
+                )}
+                {healthTrend > 0 ? "+" : ""}
+                {healthTrend}
               </span>
             </div>
             <div className="text-3xl font-medium text-white font-mono tabular-nums">
@@ -229,7 +255,7 @@ export default function DashboardPage() {
               Predicted This Week
             </p>
             <p className="text-sm text-gray-600 mt-1 font-mono font-medium">
-              82% confidence
+              {stats.predictedConfidence}% confidence
             </p>
           </div>
 
@@ -243,7 +269,7 @@ export default function DashboardPage() {
                 aria-hidden="true"
               />
               <span className="text-sm text-gray-500 font-medium">
-                Silver Saver
+                {profile.tier}
               </span>
             </div>
             <div className="text-3xl font-medium text-white font-mono tabular-nums">
@@ -277,7 +303,7 @@ export default function DashboardPage() {
               Weekend Target
             </p>
             <p className="text-sm text-gray-600 mt-1 font-mono font-medium">
-              ${Math.round(getChallengeCurrentSpend(activeChallenge ?? { id: "", name: "", goal: 0, unit: "CAD", endDate: "", participants: 0 }))} spent of ${Math.round(activeChallenge?.goal ?? 0)}
+              ${activeChallengeSpend} spent of ${Math.round(activeChallenge?.goal ?? 0)}
             </p>
           </div>
         </div>
@@ -294,7 +320,7 @@ export default function DashboardPage() {
                 Predicted vs Actual
               </h3>
               <span className="text-sm text-gray-600 font-mono font-medium">
-                Last 9 weeks
+                Last {spendingHistoryData.length} weeks
               </span>
             </div>
             <ResponsiveContainer width="100%" height={200}>
@@ -512,8 +538,17 @@ export default function DashboardPage() {
               <h3 className="text-base text-gray-200 font-medium">
                 Health Score Trend
               </h3>
-              <span className="text-sm text-success/80 font-mono font-medium">
-                +{stats.healthScoreTrend} this month
+              <span
+                className={`text-sm font-mono font-medium ${
+                  isHealthTrendPositive
+                    ? "text-success/80"
+                    : isHealthTrendNegative
+                    ? "text-destructive/80"
+                    : "text-gray-500"
+                }`}
+              >
+                {healthTrend > 0 ? "+" : ""}
+                {healthTrend} this month
               </span>
             </div>
             <ResponsiveContainer width="100%" height={140}>
@@ -548,7 +583,7 @@ export default function DashboardPage() {
                   tickLine={false}
                 />
                 <YAxis
-                  domain={[40, 100]}
+                  domain={[0, 100]}
                   tick={{ fontSize: 10, fill: "#5C5C5C" }}
                   axisLine={false}
                   tickLine={false}

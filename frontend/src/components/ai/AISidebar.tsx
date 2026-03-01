@@ -96,13 +96,14 @@ export function AISidebar({ isOpen, onClose }: AISidebarProps) {
 
   useEffect(() => {
     let cancelled = false;
+    const storedBudget = getStoredMonthlyBudget();
 
     api
-      .getDashboard()
+      .getDashboard({ monthlyBudget: storedBudget })
       .then((data) => {
         if (cancelled) return;
         setCalendarEvents(data.events);
-        setMonthlyBudget(data.forecast.monthlyBudget);
+        setMonthlyBudget(data.forecast.monthlyBudget ?? storedBudget);
       })
       .catch(() => {});
 
