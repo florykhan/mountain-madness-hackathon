@@ -10,3 +10,6 @@ build/
 .pytest_cache/
 node_modules/
 .next/
+
+# GitHub Pages / deploy output
+florykhan.github.io
