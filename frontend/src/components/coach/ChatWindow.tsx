@@ -14,10 +14,12 @@ export interface ChatMessage {
 interface ChatWindowProps {
   messages: ChatMessage[];
   loading?: boolean;
+  /** When set, this assistant message shows a typing cursor. */
+  streamingMessageId?: string | null;
   className?: string;
 }
 
-export function ChatWindow({ messages, loading, className }: ChatWindowProps) {
+export function ChatWindow({ messages, loading, streamingMessageId, className }: ChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,6 +68,9 @@ export function ChatWindow({ messages, loading, className }: ChatWindowProps) {
               )}
             >
               {msg.content}
+              {msg.role === "assistant" && msg.id === streamingMessageId && (
+                <span className="ml-0.5 animate-pulse text-slate-600" aria-hidden>|</span>
+              )}
             </div>
           </div>
         ))}

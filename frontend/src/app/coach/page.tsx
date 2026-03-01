@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Send, MessageCircle } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { ChatWindow, type ChatMessage } from "@/components/coach/ChatWindow";
@@ -10,6 +10,7 @@ import { SUGGESTED_PROMPTS } from "@/lib/constants";
 import chatResponses from "@/mocks/chat.json";
 
 const RESPONSES = chatResponses.responses as Record<string, string>;
+const TYPING_INTERVAL_MS = 10;
 
 function pickResponse(input: string): string {
   const lower = input.toLowerCase();
@@ -25,6 +26,33 @@ export default function CoachPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streaming, setStreaming] = useState<{ messageId: string; fullText: string } | null>(null);
+  const typingIndexRef = useRef(0);
+  const intervalIdRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!streaming) return;
+    const { messageId, fullText } = streaming;
+    typingIndexRef.current = 0;
+    intervalIdRef.current = setInterval(() => {
+      typingIndexRef.current += 1;
+      const index = typingIndexRef.current;
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId ? { ...m, content: fullText.slice(0, index) } : m
+        )
+      );
+      if (index >= fullText.length) {
+        if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+        intervalIdRef.current = null;
+        setStreaming(null);
+      }
+    }, TYPING_INTERVAL_MS);
+    return () => {
+      if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+      intervalIdRef.current = null;
+    };
+  }, [streaming?.messageId, streaming?.fullText]);
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -46,11 +74,12 @@ export default function CoachPage() {
         const assistantMsg: ChatMessage = {
           id: `a-${Date.now()}`,
           role: "assistant",
-          content: reply,
+          content: "",
           timestamp: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, assistantMsg]);
         setLoading(false);
+        setStreaming({ messageId: assistantMsg.id, fullText: reply });
       }, 800);
     },
     []
@@ -69,7 +98,12 @@ export default function CoachPage() {
 
         <div className="flex flex-1 flex-col gap-4 overflow-hidden">
           <div className="min-h-0 flex-1">
-            <ChatWindow messages={messages} loading={loading} className="h-full min-h-[280px]" />
+            <ChatWindow
+            messages={messages}
+            loading={loading}
+            streamingMessageId={streaming?.messageId ?? null}
+            className="h-full min-h-[280px]"
+          />
           </div>
 
           <div className="flex-shrink-0 space-y-3">
