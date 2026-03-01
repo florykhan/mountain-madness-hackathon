@@ -3,7 +3,7 @@
 import { Trophy, Fire, UsersThree, Crosshair, SunHorizon, Lock } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; weight?: string }>> = {
+const ICON_MAP: Record<string, React.ComponentType<Record<string, unknown>>> = {
   Trophy,
   Flame: Fire,
   Users: UsersThree,

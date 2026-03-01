@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Settings as SettingsIcon } from "lucide-react";
+import { GearSix } from "@phosphor-icons/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -18,7 +18,7 @@ export default function SettingsPage() {
       <div className="p-4 md:p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="flex items-center gap-2.5 text-2xl font-bold text-slate-900">
-          <SettingsIcon className="h-6 w-6 text-primary-600" aria-hidden />
+          <GearSix size={26} weight="duotone" className="text-primary-600" aria-hidden />
           Settings
         </h1>
           <p className="text-slate-600">Profile and preferences</p>

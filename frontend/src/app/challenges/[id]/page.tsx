@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Trophy } from "lucide-react";
+import { ArrowLeft, Trophy } from "@phosphor-icons/react/dist/ssr";
 import { PageShell } from "@/components/layout/PageShell";
 import { Leaderboard } from "@/components/challenges/Leaderboard";
 import { BadgesGrid } from "@/components/challenges/BadgesGrid";
@@ -47,13 +47,13 @@ export default async function ChallengeDetailPage({ params }: Params) {
           href="/challenges"
           className="mb-4 inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft size={18} weight="bold" />
           Back to challenges
         </Link>
 
         <div className="mb-8">
           <h1 className="flex items-center gap-2.5 text-2xl font-bold text-slate-900">
-          <Trophy className="h-6 w-6 text-primary-600" aria-hidden />
+          <Trophy size={26} weight="fill" className="text-primary-600" aria-hidden />
           {challenge.name}
         </h1>
           {challenge.description && (

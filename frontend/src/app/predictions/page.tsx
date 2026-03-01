@@ -237,7 +237,7 @@ export default function PredictionsPage() {
           {/* AI Prediction */}
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles
+              <Sparkle
                 className="w-3.5 h-3.5 text-accent-purple"
                 aria-hidden="true"
               />
@@ -277,7 +277,7 @@ export default function PredictionsPage() {
             }`}
           >
             <div className="flex items-center gap-2 mb-3">
-              <RefreshCw
+              <ArrowClockwise
                 className="w-3.5 h-3.5 text-gray-500"
                 aria-hidden="true"
               />
@@ -297,7 +297,7 @@ export default function PredictionsPage() {
             </p>
             {savings > 0 && (
               <div className="mt-3 flex items-center gap-1.5">
-                <TrendingDown
+                <TrendDown
                   className="w-3.5 h-3.5 text-success"
                   aria-hidden="true"
                 />
@@ -326,7 +326,7 @@ export default function PredictionsPage() {
               Actual spending
             </p>
             <div className="mt-3 flex items-center gap-1.5">
-              <TrendingUp
+              <TrendUp
                 className="w-3.5 h-3.5 text-destructive"
                 aria-hidden="true"
               />
@@ -357,7 +357,7 @@ export default function PredictionsPage() {
                   className="text-[11px] text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 rounded font-semibold"
                   type="button"
                 >
-                  <RefreshCw className="w-3 h-3" aria-hidden="true" />{" "}
+                  <ArrowClockwise className="w-3 h-3" aria-hidden="true" />{" "}
                   Reset
                 </button>
               )}
@@ -542,7 +542,7 @@ export default function PredictionsPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <TrendingDown
+                        <TrendDown
                           className="w-3 h-3 text-success"
                           aria-hidden="true"
                         />

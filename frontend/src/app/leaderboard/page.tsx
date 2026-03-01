@@ -417,11 +417,11 @@ export default function LeaderboardPage() {
                         >
                           {isOver ? (
                             <>
-                              <TrendingUp className="w-3 h-3" /> over
+                              <TrendUp className="w-3 h-3" /> over
                             </>
                           ) : (
                             <>
-                              <TrendingDown className="w-3 h-3" /> under
+                              <TrendDown className="w-3 h-3" /> under
                             </>
                           )}
                         </div>
@@ -569,7 +569,7 @@ export default function LeaderboardPage() {
                     vs Jordan Lee (#1)
                   </span>
                   <span className="text-destructive flex items-center gap-1 font-bold font-mono text-xs">
-                    <ChevronUp className="w-3.5 h-3.5" /> +$23 behind
+                    <CaretUp className="w-3.5 h-3.5" /> +$23 behind
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -577,7 +577,7 @@ export default function LeaderboardPage() {
                     vs Sam Park (#3)
                   </span>
                   <span className="text-success flex items-center gap-1 font-bold font-mono text-xs">
-                    <ChevronDown className="w-3.5 h-3.5" /> $49 ahead
+                    <CaretDown className="w-3.5 h-3.5" /> $49 ahead
                   </span>
                 </div>
               </div>
@@ -586,7 +586,7 @@ export default function LeaderboardPage() {
             {/* AI Tip */}
             <div className="bg-warning-muted border border-warning/15 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <Flame className="w-4 h-4 text-warning" />
+                <Fire className="w-4 h-4 text-warning" />
                 <h3 className="text-warning font-bold text-sm">AI Tip</h3>
               </div>
               <p className="text-xs text-gray-300 leading-relaxed font-medium">

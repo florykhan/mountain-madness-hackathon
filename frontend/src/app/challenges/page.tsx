@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   Trophy,
-  Crosshair,
   Star,
   Plus,
   Clock,
@@ -23,7 +22,7 @@ function ProgressRing({
   max,
   size = 80,
   stroke = 8,
-  color = "#10b981",
+  color = "#10A861",
 }: {
   value: number;
   max: number;
@@ -42,7 +41,7 @@ function ProgressRing({
         cy={size / 2}
         r={r}
         fill="none"
-        stroke="#f1f5f9"
+        stroke="rgba(255,255,255,0.06)"
         strokeWidth={stroke}
       />
       <circle
@@ -136,7 +135,7 @@ export default function ChallengesPage() {
     return (
       <PageShell>
         <div className="p-6 flex items-center justify-center min-h-[200px]">
-          <p className="text-slate-500">Loading challenges...</p>
+          <p className="text-gray-500 text-sm font-medium">Loading challenges...</p>
         </div>
       </PageShell>
     );
@@ -144,47 +143,60 @@ export default function ChallengesPage() {
 
   return (
     <PageShell>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h2 className="text-slate-900 font-semibold">Savings Challenges</h2>
-            <p className="text-sm text-slate-500 mt-0.5">
-              Gamified goals to keep your spending on track
-            </p>
+      <div className="p-6 lg:p-8 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between flex-wrap gap-4 animate-fade-up">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-accent-purple/20 rounded-xl flex items-center justify-center">
+              <Trophy className="w-5 h-5 text-accent-purple" />
+            </div>
+            <div>
+              <h2 className="text-white text-lg font-bold tracking-tight">
+                Savings Challenges
+              </h2>
+              <p className="text-sm text-gray-500 font-medium">
+                Gamified goals to keep your spending on track
+              </p>
+            </div>
           </div>
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 bg-accent-blue text-white px-4 py-2 rounded-lg hover:bg-accent-blue/80 transition-colors text-sm font-bold"
           >
             <Plus className="w-4 h-4" /> New Challenge
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Stats */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 animate-fade-up"
+          style={{ animationDelay: "60ms" }}
+        >
           {[
-            { label: "Total Points Earned", value: totalPoints.toLocaleString(), icon: Star, color: "text-yellow-500", bg: "bg-yellow-50" },
-            { label: "Challenges Won", value: challengesWon, icon: Trophy, color: "text-purple-600", bg: "bg-purple-50" },
-            { label: "Total Saved", value: totalSaved, icon: TrendingDown, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { label: "Total Points Earned", value: totalPoints.toLocaleString(), icon: Star, color: "text-warning-strong", bg: "bg-warning-muted" },
+            { label: "Challenges Won", value: challengesWon, icon: Trophy, color: "text-accent-purple", bg: "bg-accent-purple/15" },
+            { label: "Total Saved", value: totalSaved, icon: TrendDown, color: "text-success", bg: "bg-success-muted" },
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-center gap-3"
+              className="bg-surface-1 border border-white/[0.06] rounded-xl p-4 flex items-center gap-3"
             >
               <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
                 <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-lg font-bold text-slate-900">{stat.value}</p>
-                <p className="text-xs text-slate-400">{stat.label}</p>
+                <p className="text-lg font-extrabold text-white font-mono tabular-nums">{stat.value}</p>
+                <p className="text-xs text-gray-500 font-semibold">{stat.label}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div>
-          <h3 className="text-slate-700 font-medium mb-3 flex items-center gap-2">
-            <Flame className="w-4 h-4 text-orange-500" />
+        {/* Active Challenges */}
+        <div className="animate-fade-up" style={{ animationDelay: "120ms" }}>
+          <h3 className="text-gray-200 font-bold text-[13px] mb-3 flex items-center gap-2">
+            <Fire className="w-4 h-4 text-warning" />
             Active Challenges
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -194,7 +206,7 @@ export default function ChallengesPage() {
               const pct = target > 0 ? Math.round((current / target) * 100) : 0;
               const remaining = target - current;
               const isWarning = pct > 70;
-              const ringColor = isWarning ? "#f59e0b" : "#10b981";
+              const ringColor = isWarning ? "#F79009" : "#10A861";
               const daysLeft = Math.max(
                 0,
                 Math.ceil(
@@ -205,15 +217,15 @@ export default function ChallengesPage() {
               return (
                 <div
                   key={challenge.id}
-                  className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm"
+                  className="bg-surface-1 border border-white/[0.06] rounded-xl p-5"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Trophy className="w-4 h-4 text-purple-500" />
-                        <h3 className="text-slate-800 font-medium">{challenge.name}</h3>
+                        <Trophy className="w-4 h-4 text-accent-purple" />
+                        <h3 className="text-gray-100 font-semibold">{challenge.name}</h3>
                       </div>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-gray-500 font-medium">
                         {challenge.description ?? `Target: ${challenge.goal} ${challenge.unit}`}
                       </p>
                     </div>
@@ -226,41 +238,41 @@ export default function ChallengesPage() {
                         color={ringColor}
                       />
                       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-xs font-bold text-slate-800">{pct}%</span>
-                        <span className="text-xs text-slate-400" style={{ fontSize: "9px" }}>
+                        <span className="text-xs font-bold text-white">{pct}%</span>
+                        <span className="text-gray-500" style={{ fontSize: "9px" }}>
                           used
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Spent</span>
-                      <span className="font-semibold text-slate-900">${current}</span>
+                      <span className="text-gray-400 font-semibold">Spent</span>
+                      <span className="font-bold text-white font-mono tabular-nums">${current}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Target</span>
-                      <span className="font-semibold text-slate-900">${target}</span>
+                      <span className="text-gray-400 font-semibold">Target</span>
+                      <span className="font-bold text-white font-mono tabular-nums">${target}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-600">Remaining</span>
+                      <span className="text-gray-400 font-semibold">Remaining</span>
                       <span
-                        className={`font-semibold ${remaining > 0 ? "text-emerald-600" : "text-red-500"}`}
+                        className={`font-bold font-mono tabular-nums ${remaining > 0 ? "text-success" : "text-destructive"}`}
                       >
                         ${remaining > 0 ? remaining : 0}
                       </span>
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      <span className="text-xs text-slate-500">
+                      <Clock className="w-3.5 h-3.5 text-gray-500" />
+                      <span className="text-xs text-gray-500 font-medium">
                         {daysLeft > 0 ? `${daysLeft}d left` : "Ends soon"}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                      <span className="text-xs text-yellow-600 font-medium">
+                      <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
+                      <span className="text-xs text-warning-strong font-bold">
                         Earn {challenge.streak ? challenge.streak * 100 : 400} pts
                       </span>
                     </div>
@@ -271,44 +283,45 @@ export default function ChallengesPage() {
           </div>
         </div>
 
-        <div>
-          <h3 className="text-slate-700 font-medium mb-3 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-slate-400" />
+        {/* Challenge History */}
+        <div className="animate-fade-up" style={{ animationDelay: "180ms" }}>
+          <h3 className="text-gray-200 font-bold text-[13px] mb-3 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-gray-500" />
             Challenge History
           </h3>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="divide-y divide-slate-100">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
+            <div className="divide-y divide-white/[0.04]">
               {pastChallenges.map((challenge) => (
                 <div
                   key={challenge.id}
-                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/[0.02] transition-colors"
                 >
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      challenge.status === "won" ? "bg-emerald-100" : "bg-red-100"
+                      challenge.status === "won" ? "bg-success-muted" : "bg-destructive-muted"
                     }`}
                   >
                     {challenge.status === "won" ? (
-                      <CheckCircle className="w-5 h-5 text-emerald-600" />
+                      <CheckCircle className="w-5 h-5 text-success" />
                     ) : (
-                      <XCircle className="w-5 h-5 text-red-500" />
+                      <XCircle className="w-5 h-5 text-destructive" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-800">{challenge.name}</p>
-                    <p className="text-xs text-slate-400">{challenge.month}</p>
+                    <p className="text-sm font-semibold text-gray-100">{challenge.name}</p>
+                    <p className="text-[11px] text-gray-600 font-mono">{challenge.month}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-slate-700">
-                      ${challenge.actual} <span className="text-slate-400">/ ${challenge.target}</span>
+                    <p className="text-sm text-gray-200 font-bold font-mono tabular-nums">
+                      ${challenge.actual} <span className="text-gray-600">/ ${challenge.target}</span>
                     </p>
                     {challenge.status === "won" ? (
                       <div className="flex items-center gap-1 justify-end">
-                        <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                        <span className="text-xs text-yellow-600">+{challenge.reward} pts</span>
+                        <Star className="w-3 h-3 text-warning-strong fill-warning-strong" />
+                        <span className="text-xs text-warning-strong font-bold">+{challenge.reward} pts</span>
                       </div>
                     ) : (
-                      <span className="text-xs text-red-400">
+                      <span className="text-xs text-destructive font-medium">
                         Over by ${challenge.actual - challenge.target}
                       </span>
                     )}
@@ -320,27 +333,28 @@ export default function ChallengesPage() {
         </div>
       </div>
 
+      {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-surface-2 border border-white/[0.08] rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-purple-600" />
+                <div className="w-8 h-8 bg-accent-purple/20 rounded-lg flex items-center justify-center">
+                  <Lightning className="w-4 h-4 text-accent-purple" />
                 </div>
-                <h3 className="text-slate-900 font-semibold">New Savings Challenge</h3>
+                <h3 className="text-white font-bold">New Savings Challenge</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl leading-none"
+                className="text-gray-500 hover:text-gray-300 text-xl leading-none transition-colors"
               >
                 ×
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-slate-600 mb-1 block">Challenge Name</label>
+                <label className="text-sm text-gray-400 mb-1 block font-semibold">Challenge Name</label>
                 <input
                   type="text"
                   value={newChallenge.name}
@@ -348,26 +362,26 @@ export default function ChallengesPage() {
                     setNewChallenge((p) => ({ ...p, name: e.target.value }))
                   }
                   placeholder="e.g., Weekend Warrior"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full border border-white/[0.08] bg-surface-3 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-blue/40"
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-600 mb-1 block">Spending Target ($)</label>
+                <label className="text-sm text-gray-400 mb-1 block font-semibold">Spending Target ($)</label>
                 <input
                   type="number"
                   value={newChallenge.target}
                   onChange={(e) =>
                     setNewChallenge((p) => ({ ...p, target: e.target.value }))
                   }
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full border border-white/[0.08] bg-surface-3 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-blue/40 font-mono"
                 />
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-gray-600 mt-1 font-medium">
                   AI-suggested target based on your prediction: $274
                 </p>
               </div>
               <div>
-                <label className="text-sm text-slate-600 mb-2 block flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" /> Invite Friends
+                <label className="text-sm text-gray-400 mb-2 block font-semibold flex items-center gap-1">
+                  <UsersThree className="w-3.5 h-3.5" /> Invite Friends
                 </label>
                 <div className="space-y-2">
                   {friendSuggestions.map((friend) => (
@@ -377,8 +391,8 @@ export default function ChallengesPage() {
                       onClick={() => toggleFriend(friend)}
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all text-sm ${
                         newChallenge.friends.includes(friend)
-                          ? "border-primary-300 bg-primary-50 text-primary-700"
-                          : "border-slate-200 bg-slate-50 text-slate-600 hover:border-primary-200"
+                          ? "border-accent-blue/30 bg-accent-blue-muted text-accent-blue font-semibold"
+                          : "border-white/[0.06] bg-surface-3 text-gray-400 hover:border-white/[0.12] font-medium"
                       }`}
                     >
                       <span>{friend}</span>
@@ -390,16 +404,16 @@ export default function ChallengesPage() {
                 </div>
               </div>
               {newChallenge.target && (
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                <div className="bg-warning-muted border border-warning/15 rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-semibold text-purple-700">
+                    <Star className="w-4 h-4 text-warning-strong fill-warning-strong" />
+                    <span className="text-sm font-bold text-warning">
                       Estimated Reward
                     </span>
                   </div>
-                  <p className="text-xs text-purple-600">
+                  <p className="text-xs text-gray-300 font-medium">
                     Complete this challenge and earn approximately{" "}
-                    <strong>
+                    <strong className="text-white font-bold">
                       {Math.round(parseInt(newChallenge.target || "0") * 2.5)} points
                     </strong>
                     .
@@ -411,16 +425,16 @@ export default function ChallengesPage() {
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm"
+                className="flex-1 py-2.5 border border-white/[0.08] text-gray-400 rounded-lg hover:bg-white/[0.04] transition-colors text-sm font-semibold"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="flex-1 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm flex items-center justify-center gap-2 font-medium"
+                className="flex-1 py-2.5 bg-accent-blue text-white rounded-lg hover:bg-accent-blue/80 transition-colors text-sm flex items-center justify-center gap-2 font-bold"
               >
-                <Zap className="w-4 h-4" /> Launch Challenge
+                <Lightning className="w-4 h-4" /> Launch Challenge
               </button>
             </div>
           </div>

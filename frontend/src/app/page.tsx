@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarBlank, UploadSimple, ArrowRight, CheckCircle } from "@phosphor-icons/react";
+import { CalendarBlank, UploadSimple, ArrowRight, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { PageShell } from "@/components/layout/PageShell";
 import { ScrollArrow } from "@/components/landing/ScrollArrow";
 import { HeroLockup } from "@/components/landing/HeroLockup";

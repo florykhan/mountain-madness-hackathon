@@ -226,7 +226,7 @@ export default function BankingPage() {
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 bg-success-muted rounded-lg flex items-center justify-center">
-                <Unlock className="w-4 h-4 text-success" />
+                <LockOpen className="w-4 h-4 text-success" />
               </div>
               <span className="text-sm text-gray-400 font-semibold">
                 Available
@@ -442,7 +442,7 @@ export default function BankingPage() {
             {/* Nomi Insights */}
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
-                <BarChart3 className="w-4 h-4 text-accent-blue" />
+                <ChartBar className="w-4 h-4 text-accent-blue" />
                 <h3 className="text-gray-100 font-bold text-sm">
                   Nomi Insights
                 </h3>
@@ -502,9 +502,9 @@ export default function BankingPage() {
                     </span>
                     <div className="flex items-center gap-1.5">
                       {insight.trend === "down" ? (
-                        <TrendingDown className="w-3 h-3 text-success" />
+                        <TrendDown className="w-3 h-3 text-success" />
                       ) : (
-                        <TrendingUp className="w-3 h-3 text-destructive" />
+                        <TrendUp className="w-3 h-3 text-destructive" />
                       )}
                       <span
                         className={`text-xs font-bold font-mono tabular-nums ${

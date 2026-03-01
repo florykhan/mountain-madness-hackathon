@@ -326,14 +326,14 @@ export default function CalendarPage() {
                 onClick={goToPreviousWeek}
                 className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <CaretLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
                 onClick={goToNextWeek}
                 className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
-                <ChevronRight className="h-4 w-4" />
+                <CaretRight className="h-4 w-4" />
               </button>
             </div>
 
@@ -344,7 +344,7 @@ export default function CalendarPage() {
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-3 py-1.5">
-              <DollarSign className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <CurrencyDollar className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
               <span className="text-xs text-[var(--text-secondary)]">
                 Week total:{" "}
                 <span className="font-semibold tabular-nums text-[var(--text-primary)]">
@@ -592,7 +592,7 @@ export default function CalendarPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                    <CalendarDays className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                    <CalendarDots className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                     <span>
                       {differenceInMinutes(
                         parseISO(selectedEvent.end),
@@ -603,7 +603,7 @@ export default function CalendarPage() {
                   </div>
                   {selectedEvent.predictedSpend > 0 && (
                     <div className="flex items-center gap-2 text-xs">
-                      <DollarSign className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                      <CurrencyDollar className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                       <span className="font-medium text-[var(--text-primary)]">
                         Predicted: ${selectedEvent.predictedSpend}
                       </span>
@@ -615,7 +615,7 @@ export default function CalendarPage() {
               <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
                 <div className="flex flex-col items-center gap-2 py-4 text-center">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-hover)]">
-                    <CalendarDays className="h-5 w-5 text-[var(--text-muted)]" />
+                    <CalendarDots className="h-5 w-5 text-[var(--text-muted)]" />
                   </div>
                   <p className="text-xs text-[var(--text-tertiary)]">
                     Click an event to view details
