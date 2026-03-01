@@ -54,14 +54,14 @@ FutureSpend/
 │   │   ├── schemas.py                   # Pydantic models
 │   │   └── tools.py                     # Coach tools (vault, etc.)
 │   ├── parser.py                        # Calendar event → features
-│   ├── prediction.py                   # Spend prediction by category
-│   ├── element_of_game.py              # Challenge generation
-│   ├── leaderboard.py                  # Leaderboard calculation
-│   ├── calendar_fetcher.py             # Calendar events (mock / Google)
+│   ├── prediction.py                    # Spend prediction by category
+│   ├── element_of_game.py               # Challenge generation
+│   ├── leaderboard.py                   # Leaderboard calculation
+│   ├── calendar_fetcher.py              # Calendar events (mock / Google)
 │   ├── mock_bank.py                     # Demo bank balance & transactions
 │   ├── main.py                          # FastAPI app & all routes
-│   ├── requirements.txt                # Python dependencies
-│   ├── .env.example                    # GEMINI_API_KEY (optional)
+│   ├── requirements.txt                 # Python dependencies
+│   ├── .env.example                     # GEMINI_API_KEY (optional)
 │   └── .python-version                  # 3.11.7
 │
 ├── frontend/                            # Next.js 14 frontend
@@ -81,9 +81,9 @@ FutureSpend/
 │   │   ├── lib/                         # API client, utils, types
 │   │   ├── mocks/                       # Mock JSON data
 │   │   └── styles/
-│   ├── .env.example                    # NEXT_PUBLIC_API_URL
-│   ├── next.config.js                  # Static export, basePath for GitHub Pages
-│   └── package.json                    # Node dependencies
+│   ├── .env.example                     # NEXT_PUBLIC_API_URL
+│   ├── next.config.js                   # Static export, basePath for GitHub Pages
+│   └── package.json                     # Node dependencies
 │
 ├── render.yaml                          # Render backend deployment (rootDir: backend)
 ├── .gitignore
