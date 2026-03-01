@@ -12,7 +12,7 @@ const getBaseUrl = (): string => {
 
 async function request<T>(
   path: string,
-  options: RequestInit & { method?: string; body?: unknown } = {}
+  options: Omit<RequestInit, "body"> & { method?: string; body?: unknown } = {}
 ): Promise<T> {
   const base = getBaseUrl();
   if (!base) {

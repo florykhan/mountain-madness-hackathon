@@ -1,78 +1,214 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import {
+  format,
+  startOfWeek,
+  addDays,
+  addWeeks,
+  subWeeks,
+  isSameDay,
+  parseISO,
+  differenceInMinutes,
+  isToday,
+} from "date-fns";
 import {
   ChevronLeft,
   ChevronRight,
-  Plus,
   DollarSign,
   Clock,
-  MapPin,
-  Users,
+  X,
+  CalendarDays,
 } from "lucide-react";
+import { cva } from "class-variance-authority";
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import eventsData from "@/mocks/events.json";
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const HOURS = Array.from({ length: 14 }, (_, i) => i + 7);
-const CALENDAR_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  work: { bg: "bg-blue-100", border: "border-blue-300", text: "text-blue-800" },
-  personal: { bg: "bg-slate-100", border: "border-slate-300", text: "text-slate-800" },
-  social: { bg: "bg-violet-100", border: "border-violet-300", text: "text-violet-800" },
-  health: { bg: "bg-pink-100", border: "border-pink-300", text: "text-pink-800" },
-};
+/* ─── Types ─── */
 
-type EventItem = {
+type CalendarType = "work" | "personal" | "social" | "health";
+
+interface CalendarEvent {
   id: string;
   title: string;
   start: string;
   end: string;
-  calendarType: string;
+  calendarType: CalendarType;
   predictedSpend: number;
   category: string;
-};
-type NormalizedEvent = {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  duration: number;
-  calendar: string;
-  predictedSpend: number;
-  calendarType: string;
-};
-
-function normalizeEvent(ev: EventItem): NormalizedEvent {
-  const start = new Date(ev.start);
-  const end = new Date(ev.end);
-  const date = ev.start.slice(0, 10);
-  const time = `${String(start.getHours()).padStart(2, "0")}:${String(start.getMinutes()).padStart(2, "0")}`;
-  const duration = (end.getTime() - start.getTime()) / 60000;
-  const calendar =
-    ev.calendarType === "work"
-      ? "Work"
-      : ev.calendarType === "social"
-        ? "Social"
-        : ev.calendarType === "health"
-          ? "Health"
-          : "Personal";
-  return {
-    id: ev.id,
-    title: ev.title,
-    date,
-    time,
-    duration,
-    calendar,
-    predictedSpend: ev.predictedSpend ?? 0,
-    calendarType: ev.calendarType,
-  };
 }
 
-export default function CalendarPage() {
-  const [rawEvents, setRawEvents] = useState<EventItem[]>(eventsData as EventItem[]);
-  const [loading, setLoading] = useState(!!process.env.NEXT_PUBLIC_API_URL);
+/* ─── Constants ─── */
 
+const HOUR_HEIGHT = 64; // px per hour slot
+const VISIBLE_HOURS = { from: 7, to: 21 }; // 7am–9pm
+const HOURS = Array.from(
+  { length: VISIBLE_HOURS.to - VISIBLE_HOURS.from },
+  (_, i) => i + VISIBLE_HOURS.from
+);
+
+const CALENDAR_TYPES: { key: CalendarType; label: string }[] = [
+  { key: "work", label: "Work" },
+  { key: "personal", label: "Personal" },
+  { key: "social", label: "Social" },
+  { key: "health", label: "Health" },
+];
+
+const CALENDAR_COLORS: Record<
+  CalendarType,
+  { bg: string; border: string; text: string; dot: string }
+> = {
+  work: {
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/25",
+    text: "text-blue-400",
+    dot: "bg-blue-500",
+  },
+  personal: {
+    bg: "bg-zinc-400/10",
+    border: "border-zinc-400/25",
+    text: "text-zinc-300",
+    dot: "bg-zinc-400",
+  },
+  social: {
+    bg: "bg-violet-500/10",
+    border: "border-violet-500/25",
+    text: "text-violet-400",
+    dot: "bg-violet-500",
+  },
+  health: {
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/25",
+    text: "text-emerald-400",
+    dot: "bg-emerald-500",
+  },
+};
+
+/* ─── Event badge variants (inspired by big-calendar) ─── */
+
+const eventCardVariants = cva(
+  "absolute rounded-md border px-2 py-1.5 text-xs cursor-pointer select-none transition-all hover:brightness-125 hover:shadow-lg overflow-hidden",
+  {
+    variants: {
+      color: {
+        work: "border-blue-500/30 bg-blue-500/15 text-blue-300",
+        personal: "border-zinc-500/30 bg-zinc-500/15 text-zinc-300",
+        social: "border-violet-500/30 bg-violet-500/15 text-violet-300",
+        health: "border-emerald-500/30 bg-emerald-500/15 text-emerald-300",
+      },
+    },
+    defaultVariants: {
+      color: "work",
+    },
+  }
+);
+
+/* ─── Helpers (adapted from big-calendar) ─── */
+
+function groupEvents(dayEvents: CalendarEvent[]): CalendarEvent[][] {
+  const sorted = [...dayEvents].sort(
+    (a, b) => parseISO(a.start).getTime() - parseISO(b.start).getTime()
+  );
+  const groups: CalendarEvent[][] = [];
+
+  for (const event of sorted) {
+    const eventStart = parseISO(event.start);
+    let placed = false;
+
+    for (const group of groups) {
+      const lastEvent = group[group.length - 1];
+      const lastEnd = parseISO(lastEvent.end);
+      if (eventStart >= lastEnd) {
+        group.push(event);
+        placed = true;
+        break;
+      }
+    }
+
+    if (!placed) groups.push([event]);
+  }
+
+  return groups;
+}
+
+function getEventPosition(
+  event: CalendarEvent,
+  groupIndex: number,
+  groupCount: number
+) {
+  const start = parseISO(event.start);
+  const end = parseISO(event.end);
+  const startMinutes = start.getHours() * 60 + start.getMinutes();
+  const durationMinutes = differenceInMinutes(end, start);
+
+  const visibleStartMinutes = VISIBLE_HOURS.from * 60;
+  const top = ((startMinutes - visibleStartMinutes) / 60) * HOUR_HEIGHT;
+  const height = Math.max((durationMinutes / 60) * HOUR_HEIGHT - 2, 24);
+  const width = groupCount > 1 ? 100 / groupCount : 100;
+  const left = groupIndex * width;
+
+  return { top, height, width, left };
+}
+
+function formatHour(hour: number): string {
+  if (hour === 0) return "12 AM";
+  if (hour === 12) return "12 PM";
+  if (hour > 12) return `${hour - 12} PM`;
+  return `${hour} AM`;
+}
+
+/* ─── Timeline indicator (from big-calendar) ─── */
+
+function TimelineIndicator() {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hour = now.getHours();
+  if (hour < VISIBLE_HOURS.from || hour >= VISIBLE_HOURS.to) return null;
+
+  const minutes = hour * 60 + now.getMinutes();
+  const visibleStart = VISIBLE_HOURS.from * 60;
+  const top = ((minutes - visibleStart) / 60) * HOUR_HEIGHT;
+
+  return (
+    <div
+      className="pointer-events-none absolute inset-x-0 z-30"
+      style={{ top: `${top}px` }}
+    >
+      <div className="relative flex items-center">
+        <div className="absolute -left-1.5 h-3 w-3 rounded-full bg-accent-blue" />
+        <div className="w-full border-t border-accent-blue" />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main component ─── */
+
+export default function CalendarPage() {
+  const [rawEvents, setRawEvents] = useState<CalendarEvent[]>(
+    eventsData as CalendarEvent[]
+  );
+  const [loading, setLoading] = useState(!!process.env.NEXT_PUBLIC_API_URL);
+  const [selectedDate, setSelectedDate] = useState(new Date(2025, 2, 3)); // March 3, 2025 to match mock data
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null
+  );
+  const [activeCalendars, setActiveCalendars] = useState<CalendarType[]>([
+    "work",
+    "personal",
+    "social",
+    "health",
+  ]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Fetch events from API if available
   useEffect(() => {
     if (!process.env.NEXT_PUBLIC_API_URL) {
       setLoading(false);
@@ -83,14 +219,15 @@ export default function CalendarPage() {
       .then((data) => {
         if (data.events?.length) {
           setRawEvents(
-            data.events.map((e) => ({
-              id: e.id,
-              title: e.title,
-              start: e.start,
-              end: e.end ?? e.start,
-              calendarType: e.calendarType ?? "personal",
-              predictedSpend: e.predictedSpend ?? 0,
-              category: e.category ?? "other",
+            data.events.map((e: Record<string, unknown>) => ({
+              id: e.id as string,
+              title: e.title as string,
+              start: e.start as string,
+              end: (e.end as string) ?? (e.start as string),
+              calendarType:
+                (e.calendarType as CalendarType) ?? "personal",
+              predictedSpend: (e.predictedSpend as number) ?? 0,
+              category: (e.category as string) ?? "other",
             }))
           );
         }
@@ -99,43 +236,71 @@ export default function CalendarPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const events = useMemo(() => rawEvents.map(normalizeEvent), [rawEvents]);
-  const [selectedEvent, setSelectedEvent] = useState<NormalizedEvent | null>(null);
-  const [activeCalendars, setActiveCalendars] = useState<string[]>([
-    "Work",
-    "Personal",
-    "Social",
-    "Health",
-  ]);
-  const weekLabel = "March 3–9, 2025";
-  const filteredEvents = events.filter((e) => activeCalendars.includes(e.calendar));
-  const totalPredicted = filteredEvents.reduce((s, e) => s + e.predictedSpend, 0);
-  const dates = ["03", "04", "05", "06", "07", "08", "09"];
-  const todayIndex = 0;
+  // Auto-scroll to ~8am on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      const offset = (8 - VISIBLE_HOURS.from) * HOUR_HEIGHT;
+      scrollRef.current.scrollTop = offset;
+    }
+  }, []);
 
-  const toggleCalendar = (cal: string) => {
+  // Derived state
+  const weekStart = useMemo(
+    () => startOfWeek(selectedDate, { weekStartsOn: 1 }),
+    [selectedDate]
+  );
+  const weekDays = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)),
+    [weekStart]
+  );
+
+  const filteredEvents = useMemo(
+    () => rawEvents.filter((e) => activeCalendars.includes(e.calendarType)),
+    [rawEvents, activeCalendars]
+  );
+
+  const totalPredicted = useMemo(
+    () => filteredEvents.reduce((sum, e) => sum + e.predictedSpend, 0),
+    [filteredEvents]
+  );
+
+  const weekLabel = useMemo(() => {
+    const end = addDays(weekStart, 6);
+    return `${format(weekStart, "MMM d")} – ${format(end, "MMM d, yyyy")}`;
+  }, [weekStart]);
+
+  // Navigation
+  const goToPreviousWeek = useCallback(
+    () => setSelectedDate((d) => subWeeks(d, 1)),
+    []
+  );
+  const goToNextWeek = useCallback(
+    () => setSelectedDate((d) => addWeeks(d, 1)),
+    []
+  );
+  const goToToday = useCallback(() => setSelectedDate(new Date()), []);
+
+  const toggleCalendar = useCallback((type: CalendarType) => {
     setActiveCalendars((prev) =>
-      prev.includes(cal) ? prev.filter((c) => c !== cal) : [...prev, cal]
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
-  };
+  }, []);
 
-  const getEventStyle = (ev: NormalizedEvent) => {
-    const [h, m] = ev.time.split(":").map(Number);
-    const top = (h - 7) * 56 + m * (56 / 60);
-    const height = Math.max(ev.duration * (56 / 60), 28);
-    return { top, height };
-  };
-
-  const getDayIndex = (dateStr: string) => {
-    const day = dateStr.slice(-2);
-    return dates.indexOf(day);
-  };
+  // Get events for a specific day
+  const getDayEvents = useCallback(
+    (day: Date) =>
+      filteredEvents.filter((e) => isSameDay(parseISO(e.start), day)),
+    [filteredEvents]
+  );
 
   if (loading) {
     return (
       <PageShell>
-        <div className="p-6 flex items-center justify-center min-h-[200px]">
-          <p className="text-slate-500">Loading calendar...</p>
+        <div className="flex min-h-[400px] items-center justify-center p-6">
+          <div className="flex items-center gap-3 text-[var(--text-tertiary)]">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            <span className="text-sm">Loading calendar...</span>
+          </div>
         </div>
       </PageShell>
     );
@@ -143,221 +308,374 @@ export default function CalendarPage() {
 
   return (
     <PageShell>
-      <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex h-full flex-col gap-4 p-5">
+        {/* ─── Header ─── */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center hover:bg-slate-50 transition-colors"
+              onClick={goToToday}
+              className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
             >
-              <ChevronLeft className="w-4 h-4 text-slate-600" />
+              Today
             </button>
-            <h2 className="text-slate-900 font-semibold">{weekLabel}</h2>
-            <button
-              type="button"
-              className="w-8 h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center hover:bg-slate-50 transition-colors"
-            >
-              <ChevronRight className="w-4 h-4 text-slate-600" />
-            </button>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={goToPreviousWeek}
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={goToNextWeek}
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            <h2 className="text-base font-semibold text-[var(--text-primary)]">
+              {weekLabel}
+            </h2>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-primary-50 border border-primary-200 px-3 py-1.5 rounded-lg flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-primary-600" />
-              <span className="text-sm text-primary-700">
-                Predicted: <strong>${totalPredicted}</strong>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-3 py-1.5">
+              <DollarSign className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+              <span className="text-xs text-[var(--text-secondary)]">
+                Week total:{" "}
+                <span className="font-semibold tabular-nums text-[var(--text-primary)]">
+                  ${totalPredicted}
+                </span>
               </span>
             </div>
-            <button
-              type="button"
-              className="flex items-center gap-2 bg-primary-600 text-white px-3 py-1.5 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-            >
-              <Plus className="w-4 h-4" /> Add Event
-            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 flex-wrap">
-          <span className="text-xs text-slate-500">Calendars:</span>
-          {["Work", "Personal", "Social", "Health"].map((cal) => {
-            const key = cal.toLowerCase();
-            const colors = CALENDAR_COLORS[key] ?? CALENDAR_COLORS.personal;
-            const isActive = activeCalendars.includes(cal);
+        {/* ─── Calendar filters ─── */}
+        <div className="flex items-center gap-2">
+          {CALENDAR_TYPES.map(({ key, label }) => {
+            const colors = CALENDAR_COLORS[key];
+            const active = activeCalendars.includes(key);
             return (
               <button
-                key={cal}
+                key={key}
                 type="button"
-                onClick={() => toggleCalendar(cal)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border transition-all ${
-                  isActive
+                onClick={() => toggleCalendar(key)}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
+                  active
                     ? `${colors.bg} ${colors.border} ${colors.text}`
-                    : "bg-slate-100 border-slate-200 text-slate-400"
-                }`}
+                    : "border-[var(--border-subtle)] bg-transparent text-[var(--text-muted)] hover:border-[var(--border-default)] hover:text-[var(--text-tertiary)]"
+                )}
               >
                 <div
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{
-                    backgroundColor: isActive
-                      ? key === "work"
-                        ? "#3b82f6"
-                        : key === "social"
-                          ? "#8b5cf6"
-                          : key === "health"
-                            ? "#ec4899"
-                            : "#64748b"
-                      : "#cbd5e1",
-                  }}
+                  className={cn(
+                    "h-2 w-2 rounded-full transition-colors",
+                    active ? colors.dot : "bg-[var(--text-muted)]"
+                  )}
                 />
-                {cal}
+                {label}
               </button>
             );
           })}
         </div>
 
-        <div className="flex gap-4">
-          <div className="flex-1 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm min-h-[420px]">
+        {/* ─── Calendar grid ─── */}
+        <div className="flex min-h-0 flex-1 gap-4">
+          {/* Week view */}
+          <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+            {/* Single scroll container — header is sticky so columns always align */}
             <div
-              className="grid border-b border-slate-200"
-              style={{ gridTemplateColumns: "52px repeat(7, 1fr)" }}
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto"
+              style={{ maxHeight: "calc(100vh - 280px)" }}
             >
-              <div className="border-r border-slate-100" />
-              {DAYS.map((day, i) => (
-                <div
-                  key={day}
-                  className={`py-3 text-center border-r border-slate-100 last:border-r-0 ${
-                    i === todayIndex ? "bg-primary-50" : ""
-                  }`}
-                >
-                  <p className="text-xs text-slate-400">{day}</p>
-                  <p
-                    className={`text-sm mt-0.5 ${
-                      i === todayIndex
-                        ? "w-7 h-7 bg-primary-600 text-white rounded-full mx-auto flex items-center justify-center font-semibold"
-                        : "text-slate-700"
-                    }`}
-                  >
-                    {dates[i]}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="overflow-y-auto" style={{ maxHeight: "480px" }}>
-              <div className="relative" style={{ height: `${HOURS.length * 56}px` }}>
-                {HOURS.map((hour) => (
-                  <div
-                    key={hour}
-                    className="absolute left-0 right-0 border-t border-slate-100 flex"
-                    style={{ top: `${(hour - 7) * 56}px` }}
-                  >
-                    <div className="w-[52px] flex-shrink-0 flex justify-end pr-2 pt-1">
-                      <span className="text-xs text-slate-400">
-                        {hour > 12 ? `${hour - 12}pm` : hour === 12 ? "12pm" : `${hour}am`}
-                      </span>
-                    </div>
-                    <div className="flex-1 border-l border-slate-100" />
-                  </div>
-                ))}
-                {filteredEvents.map((event) => {
-                  const dayIdx = getDayIndex(event.date);
-                  if (dayIdx < 0) return null;
-                  const { top, height } = getEventStyle(event);
-                  const colors = CALENDAR_COLORS[event.calendarType] ?? CALENDAR_COLORS.personal;
-                  const colWidth = `calc((100% - 52px) / 7)`;
-                  const leftOffset = `calc(52px + ${dayIdx} * (100% - 52px) / 7 + 2px)`;
-                  return (
-                    <button
-                      key={event.id}
-                      type="button"
-                      onClick={() => setSelectedEvent(event)}
-                      className={`absolute rounded-lg px-2 py-1 border text-left overflow-hidden transition-all hover:shadow-md cursor-pointer ${colors.bg} ${colors.border} ${colors.text}`}
-                      style={{
-                        top: `${top}px`,
-                        height: `${height}px`,
-                        left: leftOffset,
-                        width: `calc((100% - 52px) / 7 - 4px)`,
-                      }}
-                    >
-                      <p className="text-xs truncate font-semibold leading-tight">
-                        {event.title}
-                      </p>
-                      {height > 36 && (
-                        <p className="text-xs text-slate-500 mt-0.5">{event.time}</p>
-                      )}
-                      {height > 52 && event.predictedSpend > 0 && (
-                        <p className={`text-xs ${colors.text} mt-0.5`}>
-                          ~${event.predictedSpend}
-                        </p>
-                      )}
-                    </button>
-                  );
-                })}
+              <table className="w-full border-collapse" style={{ minWidth: 700 }}>
+                {/* Sticky day headers */}
+                <thead>
+                  <tr className="sticky top-0 z-20 bg-[var(--bg-secondary)]">
+                    <th
+                      className="w-14 min-w-[56px] border-b border-[var(--border-subtle)]"
+                      aria-label="Time"
+                    />
+                    {weekDays.map((day, i) => {
+                      const today = isToday(day);
+                      return (
+                        <th
+                          key={day.toISOString()}
+                          className={cn(
+                            "border-b border-l border-[var(--border-subtle)] py-3 text-center font-normal",
+                            i === 6 && "border-r-0"
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "block text-xs font-medium",
+                              today
+                                ? "text-accent-blue"
+                                : "text-[var(--text-muted)]"
+                            )}
+                          >
+                            {format(day, "EEE")}
+                          </span>
+                          <span
+                            className={cn(
+                              "mx-auto mt-1 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold",
+                              today
+                                ? "bg-accent-blue text-white"
+                                : "text-[var(--text-primary)]"
+                            )}
+                          >
+                            {format(day, "d")}
+                          </span>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                </thead>
+
+                {/* Time grid body */}
+                <tbody>
+                  {HOURS.map((hour, hourIndex) => (
+                    <tr key={hour}>
+                      {/* Hour label */}
+                      <td
+                        className="relative w-14 min-w-[56px] select-none align-top"
+                        style={{ height: `${HOUR_HEIGHT}px` }}
+                      >
+                        {hourIndex !== 0 && (
+                          <span className="absolute -top-2.5 right-3 text-[10px] font-medium text-[var(--text-muted)]">
+                            {formatHour(hour)}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Day cells */}
+                      {weekDays.map((day, dayIndex) => {
+                        // Only render events in the first hour row to avoid duplicates
+                        const isFirstHour = hourIndex === 0;
+
+                        return (
+                          <td
+                            key={`${day.toISOString()}-${hour}`}
+                            className="relative border-l border-[var(--border-subtle)] p-0"
+                            style={{ height: `${HOUR_HEIGHT}px` }}
+                          >
+                            {/* Hour line */}
+                            {hourIndex !== 0 && (
+                              <div className="absolute inset-x-0 top-0 border-t border-[var(--border-subtle)]" />
+                            )}
+                            {/* Half-hour dashed line */}
+                            <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-[var(--border-subtle)] opacity-30" />
+
+                            {/* Render all events for this day-column in the first row */}
+                            {isFirstHour && (() => {
+                              const dayEvents = getDayEvents(day);
+                              const groups = groupEvents(dayEvents);
+
+                              return groups.map((group, groupIndex) =>
+                                group.map((event) => {
+                                  const pos = getEventPosition(
+                                    event,
+                                    groupIndex,
+                                    groups.length
+                                  );
+                                  const hasOverlap = groups.length > 1;
+
+                                  return (
+                                    <div
+                                      key={event.id}
+                                      role="button"
+                                      tabIndex={0}
+                                      onClick={() => setSelectedEvent(event)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                          e.preventDefault();
+                                          setSelectedEvent(event);
+                                        }
+                                      }}
+                                      className={eventCardVariants({
+                                        color: event.calendarType,
+                                      })}
+                                      style={{
+                                        top: `${pos.top}px`,
+                                        height: `${pos.height}px`,
+                                        width: hasOverlap
+                                          ? `calc(${pos.width}% - 4px)`
+                                          : "calc(100% - 4px)",
+                                        left: hasOverlap
+                                          ? `calc(${pos.left}% + 2px)`
+                                          : "2px",
+                                        padding: "4px 8px",
+                                        zIndex: 10,
+                                      }}
+                                    >
+                                      <p className="truncate text-[11px] font-semibold leading-tight">
+                                        {event.title}
+                                      </p>
+                                      {pos.height > 32 && (
+                                        <p className="mt-0.5 text-[10px] opacity-70">
+                                          {format(parseISO(event.start), "h:mm a")}
+                                        </p>
+                                      )}
+                                      {pos.height > 50 &&
+                                        event.predictedSpend > 0 && (
+                                          <p className="mt-0.5 text-[10px] font-medium opacity-80">
+                                            ~${event.predictedSpend}
+                                          </p>
+                                        )}
+                                    </div>
+                                  );
+                                })
+                              );
+                            })()}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Current time indicator spans across the day columns area */}
+              <div className="pointer-events-none absolute inset-0" style={{ marginLeft: 56 }}>
+                <TimelineIndicator />
               </div>
             </div>
           </div>
 
+          {/* ─── Sidebar ─── */}
           <div className="w-64 flex-shrink-0 space-y-4">
+            {/* Event detail card */}
             {selectedEvent ? (
-              <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
+                <div className="mb-3 flex items-start justify-between">
+                  <div
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium",
+                      CALENDAR_COLORS[selectedEvent.calendarType].bg,
+                      CALENDAR_COLORS[selectedEvent.calendarType].border,
+                      CALENDAR_COLORS[selectedEvent.calendarType].text
+                    )}
+                  >
                     <div
-                      className={`inline-block px-2 py-0.5 rounded-full text-xs mb-2 ${CALENDAR_COLORS[selectedEvent.calendarType]?.bg ?? "bg-slate-100"} ${CALENDAR_COLORS[selectedEvent.calendarType]?.text ?? "text-slate-800"}`}
-                    >
-                      {selectedEvent.calendar}
-                    </div>
-                    <h3 className="text-slate-800 font-medium">{selectedEvent.title}</h3>
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        CALENDAR_COLORS[selectedEvent.calendarType].dot
+                      )}
+                    />
+                    {selectedEvent.calendarType}
                   </div>
                   <button
                     type="button"
                     onClick={() => setSelectedEvent(null)}
-                    className="text-slate-400 hover:text-slate-600 text-lg leading-none"
+                    className="flex h-5 w-5 items-center justify-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]"
                   >
-                    ×
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
-                <div className="space-y-2.5 text-sm text-slate-600">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-slate-400" />
+
+                <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                  {selectedEvent.title}
+                </h3>
+
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                    <Clock className="h-3.5 w-3.5 text-[var(--text-muted)]" />
                     <span>
-                      {selectedEvent.date} at {selectedEvent.time} ({selectedEvent.duration}min)
+                      {format(parseISO(selectedEvent.start), "EEE, MMM d")} at{" "}
+                      {format(parseISO(selectedEvent.start), "h:mm a")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-slate-400" />
-                    <span className="text-slate-800 font-medium">
-                      Predicted: ${selectedEvent.predictedSpend}
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                    <CalendarDays className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                    <span>
+                      {differenceInMinutes(
+                        parseISO(selectedEvent.end),
+                        parseISO(selectedEvent.start)
+                      )}{" "}
+                      minutes
                     </span>
                   </div>
+                  {selectedEvent.predictedSpend > 0 && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <DollarSign className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                      <span className="font-medium text-[var(--text-primary)]">
+                        Predicted: ${selectedEvent.predictedSpend}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
-              <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-                <h3 className="text-slate-800 font-medium mb-3">Select an event</h3>
-                <p className="text-sm text-slate-400">
-                  Click any event on the calendar to see details and spending prediction.
-                </p>
+              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
+                <div className="flex flex-col items-center gap-2 py-4 text-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-hover)]">
+                    <CalendarDays className="h-5 w-5 text-[var(--text-muted)]" />
+                  </div>
+                  <p className="text-xs text-[var(--text-tertiary)]">
+                    Click an event to view details
+                  </p>
+                </div>
               </div>
             )}
-            <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-              <h3 className="text-slate-800 font-medium mb-3">Week Summary</h3>
-              <div className="space-y-2">
-                {["Work", "Personal", "Social", "Health"].map((cal) => {
-                  const evs = filteredEvents.filter((e) => e.calendar === cal);
-                  const spend = evs.reduce((s, e) => s + e.predictedSpend, 0);
-                  if (evs.length === 0) return null;
+
+            {/* Week summary */}
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                Week Summary
+              </h3>
+
+              <div className="space-y-2.5">
+                {CALENDAR_TYPES.map(({ key, label }) => {
+                  const typeEvents = filteredEvents.filter(
+                    (e) => e.calendarType === key
+                  );
+                  const spend = typeEvents.reduce(
+                    (s, e) => s + e.predictedSpend,
+                    0
+                  );
+                  if (typeEvents.length === 0) return null;
+                  const colors = CALENDAR_COLORS[key];
+
                   return (
-                    <div key={cal} className="flex items-center justify-between">
-                      <span className="text-xs text-slate-600">{cal}</span>
-                      <span className="text-xs font-medium text-slate-700">
-                        {evs.length} events · ${spend}
-                      </span>
+                    <div key={key} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={cn("h-2 w-2 rounded-full", colors.dot)}
+                        />
+                        <span className="text-xs text-[var(--text-secondary)]">
+                          {label}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-[var(--text-muted)]">
+                          {typeEvents.length} event
+                          {typeEvents.length !== 1 ? "s" : ""}
+                        </span>
+                        {spend > 0 && (
+                          <span className="tabular-nums text-xs font-medium text-[var(--text-primary)]">
+                            ${spend}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
-                <div className="border-t border-slate-100 pt-2 mt-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-500">Total</span>
-                  <span className="text-sm font-semibold text-slate-900">
-                    ${totalPredicted}
-                  </span>
+
+                <div className="mt-3 border-t border-[var(--border-subtle)] pt-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-[var(--text-tertiary)]">
+                      Total predicted
+                    </span>
+                    <span className="tabular-nums text-sm font-semibold text-[var(--text-primary)]">
+                      ${totalPredicted}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

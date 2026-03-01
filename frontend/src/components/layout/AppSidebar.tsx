@@ -3,18 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Calendar,
+  SquaresFour,
+  CalendarBlank,
   Trophy,
-  MessageCircle,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  TrendingUp,
-  Landmark,
+  ChatCircle,
+  GearSix,
+  CaretLeft,
+  CaretRight,
+  House,
+  TrendUp,
+  Bank,
   Medal,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 

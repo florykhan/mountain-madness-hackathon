@@ -10,34 +10,78 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        /* ── Surface system (layered dark backgrounds) ── */
         surface: {
-          0: "#0a0a0b",
-          1: "#111113",
-          2: "#18181b",
-          3: "#1c1c1f",
-          4: "#232326",
-          5: "#2a2a2e",
+          0: "#09090b",
+          1: "#0f0f12",
+          2: "#161619",
+          3: "#1c1c20",
+          4: "#222226",
+          5: "#2a2a2f",
         },
-        zinc: {
-          850: "#1c1c1f",
+
+        /* ── Gray scale (inspired by Sure/Maybe) ── */
+        gray: {
+          25: "#FAFAFA",
+          50: "#F7F7F7",
+          100: "#F0F0F0",
+          200: "#E7E7E7",
+          300: "#CFCFCF",
+          400: "#9E9E9E",
+          500: "#737373",
+          600: "#5C5C5C",
+          700: "#363636",
+          800: "#242424",
+          900: "#171717",
         },
+
+        /* ── Functional tokens ── */
+        success: {
+          DEFAULT: "#10A861",
+          light: "#12B76A",
+          muted: "rgba(16, 168, 97, 0.10)",
+          strong: "#32D583",
+        },
+        destructive: {
+          DEFAULT: "#EC2222",
+          light: "#F13636",
+          muted: "rgba(236, 34, 34, 0.10)",
+          strong: "#ED4E4E",
+        },
+        warning: {
+          DEFAULT: "#DC6803",
+          light: "#F79009",
+          muted: "rgba(247, 144, 9, 0.10)",
+          strong: "#FDB022",
+        },
+
+        /* ── Accent palette ── */
+        accent: {
+          green: "#10A861",
+          "green-muted": "rgba(16, 168, 97, 0.10)",
+          red: "#EC2222",
+          "red-muted": "rgba(236, 34, 34, 0.10)",
+          blue: "#2E90FA",
+          "blue-muted": "rgba(46, 144, 250, 0.10)",
+          amber: "#F79009",
+          "amber-muted": "rgba(247, 144, 9, 0.10)",
+          purple: "#875BF7",
+          "purple-muted": "rgba(135, 91, 247, 0.10)",
+          cyan: "#06AED4",
+          "cyan-muted": "rgba(6, 174, 212, 0.10)",
+          indigo: "#6172F3",
+          "indigo-muted": "rgba(97, 114, 243, 0.10)",
+          pink: "#F23E94",
+          "pink-muted": "rgba(242, 62, 148, 0.10)",
+        },
+
+        /* ── Brand ── */
         brand: {
           DEFAULT: "#e4e4e7",
           muted: "rgba(228,228,231,0.08)",
         },
-        accent: {
-          green: "#22c55e",
-          "green-muted": "rgba(34,197,94,0.12)",
-          red: "#ef4444",
-          "red-muted": "rgba(239,68,68,0.12)",
-          blue: "#60a5fa",
-          "blue-muted": "rgba(96,165,250,0.1)",
-          amber: "#fbbf24",
-          "amber-muted": "rgba(251,191,36,0.1)",
-          purple: "#a78bfa",
-          "purple-muted": "rgba(167,139,250,0.1)",
-        },
-        // Keep primary for backwards compat with sidebar etc
+
+        /* ── Legacy compat ── */
         primary: {
           50: "#18181b",
           100: "#232326",
@@ -50,26 +94,61 @@ const config: Config = {
           800: "#fafafa",
           900: "#ffffff",
         },
+
         app: {
-          bg: "#0a0a0b",
-          surface: "#111113",
-          sidebar: "#0a0a0b",
+          bg: "#09090b",
+          surface: "#0f0f12",
+          sidebar: "#09090b",
         },
       },
+
       fontFamily: {
-        sans: ["'DM Sans'", "system-ui", "-apple-system", "sans-serif"],
-        mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
+        sans: [
+          "'Geist'",
+          "'DM Sans'",
+          "system-ui",
+          "-apple-system",
+          "sans-serif",
+        ],
+        mono: [
+          "'Geist Mono'",
+          "'JetBrains Mono'",
+          "ui-monospace",
+          "monospace",
+        ],
       },
+
       borderRadius: {
+        xl: "10px",
         "2xl": "14px",
       },
+
+      boxShadow: {
+        "border-xs": "0px 1px 2px 0px rgba(0, 0, 0, 0.25)",
+        "border-sm": "0px 1px 6px 0px rgba(0, 0, 0, 0.25)",
+        card: "0 0 0 1px rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.3)",
+        "card-hover":
+          "0 0 0 1px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.4)",
+        glow: "0 0 20px rgba(46, 144, 250, 0.15)",
+      },
+
       animation: {
         "fade-up": "fade-up 0.4s ease-out both",
+        "slide-in": "slide-in 0.3s ease-out both",
+        shimmer: "shimmer 2s linear infinite",
       },
       keyframes: {
         "fade-up": {
           from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-in": {
+          from: { opacity: "0", transform: "translateX(-8px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
       },
     },
