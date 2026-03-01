@@ -51,10 +51,10 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         className="flex items-center gap-3 px-4 py-5 border-b border-white/[0.06]"
       >
         <div className="flex-shrink-0 w-7 h-7 rounded-md bg-white/[0.08] flex items-center justify-center">
-          <span className="text-sm font-bold text-white">F</span>
+          <span className="text-sm font-semibold text-white">F</span>
         </div>
         {!collapsed && (
-          <span className="text-[13px] font-bold text-zinc-100 tracking-tight">
+          <span className="text-base font-medium text-zinc-100 tracking-tight">
             {APP_NAME}
           </span>
         )}
@@ -70,9 +70,9 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               key={href}
               href={href}
               className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors duration-150",
+                "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150",
                 isActive
-                  ? "bg-white/[0.08] text-zinc-100 font-semibold"
+                  ? "bg-white/[0.08] text-zinc-100 font-medium"
                   : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04] font-medium"
               )}
               title={collapsed ? label : undefined}

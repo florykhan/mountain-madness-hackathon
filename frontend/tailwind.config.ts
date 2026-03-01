@@ -18,6 +18,7 @@ const config: Config = {
           3: "#1c1c20",
           4: "#222226",
           5: "#2a2a2f",
+          inset: "#161619",
         },
 
         /* ── Gray scale (inspired by Sure/Maybe) ── */
@@ -103,19 +104,8 @@ const config: Config = {
       },
 
       fontFamily: {
-        sans: [
-          "'Geist'",
-          "'DM Sans'",
-          "system-ui",
-          "-apple-system",
-          "sans-serif",
-        ],
-        mono: [
-          "'Geist Mono'",
-          "'JetBrains Mono'",
-          "ui-monospace",
-          "monospace",
-        ],
+        sans: ["var(--font-sans)"],
+        mono: ["var(--font-mono)"],
       },
 
       borderRadius: {

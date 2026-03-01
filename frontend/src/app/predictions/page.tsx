@@ -235,24 +235,24 @@ export default function PredictionsPage() {
         {/* Top Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 animate-fade-up">
           {/* AI Prediction */}
-          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <Sparkle
                 className="w-3.5 h-3.5 text-accent-purple"
                 aria-hidden="true"
               />
-              <span className="text-[11px] text-gray-400 uppercase tracking-wider font-bold">
+              <span className="text-xs text-gray-400 uppercase tracking-wider font-medium">
                 AI Prediction
               </span>
             </div>
-            <div className="text-3xl font-extrabold text-white font-mono tabular-nums">
+            <div className="text-2xl font-semibold text-white font-mono tabular-nums">
               ${spendingPrediction.total}
             </div>
-            <p className="text-[12px] text-gray-400 mt-1 font-semibold">
+            <p className="text-sm text-gray-400 mt-1">
               Original weekly estimate
             </p>
             <div className="mt-4 flex items-center gap-2.5">
-              <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gray-400 rounded-full progress-bar"
                   style={{
@@ -262,7 +262,7 @@ export default function PredictionsPage() {
                   }}
                 />
               </div>
-              <span className="text-[11px] text-gray-500 font-mono tabular-nums font-bold">
+              <span className="text-xs text-gray-500 font-mono tabular-nums font-medium">
                 {Math.round(spendingPrediction.confidence * 100)}%
               </span>
             </div>
@@ -270,7 +270,7 @@ export default function PredictionsPage() {
 
           {/* What-If Total */}
           <div
-            className={`rounded-xl p-5 border ${
+            className={`rounded-xl p-4 border ${
               savings > 0
                 ? "bg-success-muted border-success/15"
                 : "bg-surface-1 border-white/[0.06]"
@@ -281,18 +281,18 @@ export default function PredictionsPage() {
                 className="w-3.5 h-3.5 text-gray-500"
                 aria-hidden="true"
               />
-              <span className="text-[11px] text-gray-400 uppercase tracking-wider font-bold">
+              <span className="text-xs text-gray-400 uppercase tracking-wider font-medium">
                 What-If Total
               </span>
             </div>
             <div
-              className={`text-3xl font-extrabold font-mono tabular-nums ${
+              className={`text-2xl font-semibold font-mono tabular-nums ${
                 savings > 0 ? "text-success" : "text-gray-100"
               }`}
             >
               ${currentTotal}
             </div>
-            <p className="text-[12px] text-gray-400 mt-1 font-semibold">
+            <p className="text-sm text-gray-400 mt-1">
               With your modifications
             </p>
             {savings > 0 && (
@@ -301,7 +301,7 @@ export default function PredictionsPage() {
                   className="w-3.5 h-3.5 text-success"
                   aria-hidden="true"
                 />
-                <span className="text-[12px] text-success font-bold font-mono">
+                <span className="text-sm text-success font-medium font-mono">
                   Saving ${savings}
                 </span>
               </div>
@@ -309,20 +309,20 @@ export default function PredictionsPage() {
           </div>
 
           {/* Last Week Actual */}
-          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <Info
                 className="w-3.5 h-3.5 text-gray-500"
                 aria-hidden="true"
               />
-              <span className="text-[11px] text-gray-400 uppercase tracking-wider font-bold">
+              <span className="text-xs text-gray-400 uppercase tracking-wider font-medium">
                 Last Week
               </span>
             </div>
-            <div className="text-3xl text-gray-100 font-bold font-mono tabular-nums">
+            <div className="text-2xl font-semibold text-gray-100 font-mono tabular-nums">
               ${spendingPrediction.lastWeekActual}
             </div>
-            <p className="text-[12px] text-gray-400 mt-1 font-semibold">
+            <p className="text-sm text-gray-400 mt-1">
               Actual spending
             </p>
             <div className="mt-3 flex items-center gap-1.5">
@@ -330,7 +330,7 @@ export default function PredictionsPage() {
                 className="w-3.5 h-3.5 text-destructive"
                 aria-hidden="true"
               />
-              <span className="text-[12px] text-destructive font-bold font-mono">
+              <span className="text-sm text-destructive font-medium font-mono">
                 +$
                 {spendingPrediction.total -
                   spendingPrediction.lastWeekActual}{" "}
@@ -347,14 +347,14 @@ export default function PredictionsPage() {
         >
           {/* Event List */}
           <div className="lg:col-span-2 bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
-              <h3 className="text-[13px] text-gray-200 font-bold">
+            <div className="px-4 py-3.5 border-b border-white/[0.06] flex items-center justify-between">
+              <h3 className="text-base font-medium text-gray-200">
                 Calendar Events This Week
               </h3>
               {skippedEvents.size > 0 && (
                 <button
                   onClick={reset}
-                  className="text-[11px] text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 rounded font-semibold"
+                  className="text-sm text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:ring-gray-400 rounded font-medium"
                   type="button"
                 >
                   <ArrowClockwise className="w-3 h-3" aria-hidden="true" />{" "}
@@ -368,7 +368,7 @@ export default function PredictionsPage() {
                 return (
                   <div
                     key={event.id}
-                    className={`flex items-center gap-4 px-5 py-3.5 transition-colors ${
+                    className={`flex items-center gap-4 px-4 py-3 transition-colors ${
                       isSkipped ? "opacity-40" : "hover:bg-white/[0.02]"
                     }`}
                   >
@@ -382,16 +382,16 @@ export default function PredictionsPage() {
                     />
                     <div className="flex-1 min-w-0">
                       <p
-                        className={`text-[13px] text-gray-200 ${
+                        className={`text-sm text-gray-200 font-medium truncate ${
                           isSkipped
                             ? "line-through text-gray-600"
                             : ""
-                        } font-semibold truncate`}
+                        }`}
                       >
                         {event.title}
                       </p>
                       <p
-                        className="text-[11px] text-gray-600 mt-0.5 font-mono font-medium"
+                        className="text-xs text-gray-600 mt-0.5 font-mono"
                         suppressHydrationWarning
                       >
                         {event.date} at {event.time}
@@ -399,11 +399,11 @@ export default function PredictionsPage() {
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
                       <span
-                        className={`text-[13px] font-mono tabular-nums ${
+                        className={`text-sm font-mono tabular-nums font-medium ${
                           isSkipped
                             ? "line-through text-gray-600"
                             : "text-gray-200"
-                        } font-bold`}
+                        }`}
                       >
                         {event.predictedSpend > 0
                           ? `$${event.predictedSpend}`
@@ -448,8 +448,8 @@ export default function PredictionsPage() {
           {/* Sidebar */}
           <div className="space-y-4">
             {/* Category Breakdown */}
-            <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-              <h3 className="text-[13px] text-gray-200 font-bold mb-4">
+            <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+              <h3 className="text-base font-medium text-gray-200 mb-4">
                 Category Breakdown
               </h3>
               <ResponsiveContainer width="100%" height={160}>
@@ -474,7 +474,7 @@ export default function PredictionsPage() {
                     tick={{
                       fontSize: 11,
                       fill: "#9E9E9E",
-                      fontWeight: 600,
+                      fontWeight: 500,
                     }}
                     width={80}
                     axisLine={false}
@@ -483,7 +483,7 @@ export default function PredictionsPage() {
                   <Tooltip
                     contentStyle={{
                       fontSize: 12,
-                      fontWeight: 600,
+                      fontWeight: 500,
                       background: "#1c1c20",
                       border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: 8,
@@ -505,11 +505,11 @@ export default function PredictionsPage() {
             </div>
 
             {/* What-If Scenarios */}
-            <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-              <h3 className="text-[13px] text-gray-200 font-bold mb-1">
+            <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+              <h3 className="text-base font-medium text-gray-200 mb-1">
                 What-If Scenarios
               </h3>
-              <p className="text-[11px] text-gray-600 mb-4 font-medium">
+              <p className="text-sm text-gray-600 mb-4">
                 Apply a scenario to see your savings
               </p>
               <div className="space-y-2">
@@ -528,8 +528,8 @@ export default function PredictionsPage() {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span
-                          className={`text-[12px] text-gray-200 ${
-                            isActive ? "font-bold" : "font-semibold"
+                          className={`text-sm text-gray-200 ${
+                            isActive ? "font-semibold" : "font-medium"
                           }`}
                         >
                           {scenario.label}
@@ -546,7 +546,7 @@ export default function PredictionsPage() {
                           className="w-3 h-3 text-success"
                           aria-hidden="true"
                         />
-                        <span className="text-[11px] text-success/80 font-mono font-bold">
+                        <span className="text-sm text-success/80 font-mono font-medium">
                           Save ${scenario.savings} &rarr; $
                           {scenario.newTotal}
                         </span>
@@ -559,17 +559,17 @@ export default function PredictionsPage() {
 
             {/* CTA */}
             {savings > 0 && (
-              <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-                <h3 className="text-[13px] text-white font-extrabold mb-1">
+              <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+                <h3 className="text-base font-semibold text-white mb-1">
                   Ready to save
                 </h3>
-                <p className="text-[11px] text-gray-500 mb-3 font-medium">
+                <p className="text-sm text-gray-500 mb-3">
                   Turn your ${currentTotal} plan into a savings challenge
                   and earn rewards.
                 </p>
                 <Link
                   href="/challenges"
-                  className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] text-gray-200 px-3 py-2 rounded-lg text-[12px] font-bold hover:bg-white/[0.12] transition-colors focus-visible:ring-2 focus-visible:ring-gray-400"
+                  className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.1] text-gray-200 px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/[0.12] transition-colors focus-visible:ring-2 focus-visible:ring-gray-400"
                 >
                   Create Challenge{" "}
                   <ArrowRight className="w-3 h-3" aria-hidden="true" />

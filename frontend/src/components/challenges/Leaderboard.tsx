@@ -21,40 +21,54 @@ export function Leaderboard({
 }: LeaderboardProps) {
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-slate-900">Leaderboard</h3>
-      <ul className="space-y-1.5">
-        {entries.map((entry) => (
-          <li
-            key={entry.rank}
-            className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 px-3 py-2"
-          >
-            <div className="flex items-center gap-2">
-              {entry.rank <= 3 ? (
-                <Medal
-                  size={18}
-                  weight="fill"
-                  style={{
-                    color:
-                      entry.rank === 1
-                        ? "#f59e0b"
-                        : entry.rank === 2
-                          ? "#94a3b8"
-                          : "#cd7f32",
-                  }}
-                />
-              ) : (
-                <span className="w-4 text-center text-xs text-slate-400">{entry.rank}</span>
-              )}
-              <span className={entry.name === "You" ? "font-semibold text-primary-700" : ""}>
-                {entry.name}
+      <h3 className="text-sm font-semibold text-zinc-100">Leaderboard</h3>
+      <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="divide-y divide-white/[0.04]">
+          {entries.map((entry) => (
+            <div
+              key={entry.rank}
+              className={`flex items-center justify-between px-4 py-3 transition-colors ${
+                entry.name === "You"
+                  ? "bg-accent-blue-muted"
+                  : "hover:bg-white/[0.02]"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                {entry.rank <= 3 ? (
+                  <Medal
+                    size={18}
+                    weight="fill"
+                    style={{
+                      color:
+                        entry.rank === 1
+                          ? "#F79009"
+                          : entry.rank === 2
+                            ? "#737373"
+                            : "#cd7f32",
+                    }}
+                  />
+                ) : (
+                  <span className="w-4 text-center text-xs text-gray-500 font-bold font-mono">
+                    {entry.rank}
+                  </span>
+                )}
+                <span
+                  className={`text-sm ${
+                    entry.name === "You"
+                      ? "font-semibold text-accent-blue"
+                      : "font-medium text-zinc-200"
+                  }`}
+                >
+                  {entry.name}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-zinc-400 font-mono tabular-nums">
+                {valueFormat(entry.value)} {valueLabel}
               </span>
             </div>
-            <span className="text-sm font-medium text-slate-700">
-              {valueFormat(entry.value)} {valueLabel}
-            </span>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

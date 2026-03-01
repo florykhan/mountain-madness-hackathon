@@ -448,7 +448,7 @@ export default function CalendarPage() {
                         style={{ height: `${HOUR_HEIGHT}px` }}
                       >
                         {hourIndex !== 0 && (
-                          <span className="absolute -top-2.5 right-3 text-[10px] font-medium text-[var(--text-muted)]">
+                          <span className="absolute -top-2.5 right-3 text-xs font-medium text-[var(--text-muted)]">
                             {formatHour(hour)}
                           </span>
                         )}
@@ -514,17 +514,17 @@ export default function CalendarPage() {
                                         zIndex: 10,
                                       }}
                                     >
-                                      <p className="truncate text-[11px] font-semibold leading-tight">
+                                      <p className="truncate text-xs font-semibold leading-tight">
                                         {event.title}
                                       </p>
                                       {pos.height > 32 && (
-                                        <p className="mt-0.5 text-[10px] opacity-70">
+                                        <p className="mt-0.5 text-xs opacity-70">
                                           {format(parseISO(event.start), "h:mm a")}
                                         </p>
                                       )}
                                       {pos.height > 50 &&
                                         event.predictedSpend > 0 && (
-                                          <p className="mt-0.5 text-[10px] font-medium opacity-80">
+                                          <p className="mt-0.5 text-xs font-medium opacity-80">
                                             ~${event.predictedSpend}
                                           </p>
                                         )}
@@ -556,7 +556,7 @@ export default function CalendarPage() {
                 <div className="mb-3 flex items-start justify-between">
                   <div
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-medium",
+                      "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium",
                       CALENDAR_COLORS[selectedEvent.calendarType].bg,
                       CALENDAR_COLORS[selectedEvent.calendarType].border,
                       CALENDAR_COLORS[selectedEvent.calendarType].text
@@ -653,7 +653,7 @@ export default function CalendarPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-[var(--text-muted)]">
+                        <span className="text-xs text-[var(--text-muted)]">
                           {typeEvents.length} event
                           {typeEvents.length !== 1 ? "s" : ""}
                         </span>

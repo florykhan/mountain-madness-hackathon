@@ -238,7 +238,7 @@ export default function LeaderboardPage() {
     if (rank === 3)
       return <Medal className="w-4 h-4 text-warning fill-warning" />;
     return (
-      <span className="text-sm text-gray-500 w-4 text-center font-bold font-mono">
+      <span className="text-sm text-zinc-500 w-4 text-center font-semibold font-mono tabular-nums">
         {rank}
       </span>
     );
@@ -253,32 +253,28 @@ export default function LeaderboardPage() {
     <PageShell>
       <div className="p-6 lg:p-8 space-y-6">
         {/* Hero Banner */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-accent-blue/15 via-accent-purple/10 to-surface-1 border border-accent-blue/10 rounded-2xl p-6 animate-fade-up">
-          <div className="absolute -top-10 -right-10 w-44 h-44 bg-accent-blue/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-16 -left-8 w-52 h-52 bg-accent-purple/5 rounded-full blur-3xl" />
+        <div className="relative overflow-hidden bg-gradient-to-br from-accent-blue/10 to-surface-1 border border-white/[0.06] rounded-xl p-6 animate-fade-up">
           <div className="relative">
             <div className="flex items-start justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Trophy className="w-5 h-5 text-warning-strong fill-warning-strong" />
-                  <span className="text-sm text-gray-400 font-semibold">
+                  <span className="text-sm text-zinc-400 font-medium">
                     Active Group Challenge
                   </span>
                 </div>
-                <h2 className="text-white text-xl font-extrabold tracking-tight mb-1">
+                <h2 className="text-white text-xl font-semibold tracking-tight mb-1">
                   {activeChallenge.name}
                 </h2>
-                <p className="text-sm text-gray-400 font-medium">
+                <p className="text-sm text-zinc-400">
                   Target: Stay under ${activeChallenge.target} this weekend
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-3xl text-white font-extrabold font-mono tabular-nums">
+                <div className="text-xl text-white font-semibold font-mono tabular-nums">
                   {daysRemaining}d
                 </div>
-                <p className="text-xs text-gray-500 font-semibold">
-                  remaining
-                </p>
+                <p className="text-sm text-zinc-500">remaining</p>
               </div>
             </div>
             <div className="mt-5 flex items-center gap-3">
@@ -286,19 +282,19 @@ export default function LeaderboardPage() {
                 {extendedLeaderboard.slice(0, 5).map((p) => (
                   <div
                     key={p.id}
-                    className="w-8 h-8 rounded-full border-2 border-surface-1 flex items-center justify-center text-white text-xs font-bold"
+                    className="w-8 h-8 rounded-full border-2 border-surface-1 flex items-center justify-center text-white text-xs font-semibold"
                     style={{ backgroundColor: p.avatarColor }}
                   >
                     {p.avatar}
                   </div>
                 ))}
               </div>
-              <span className="text-sm text-gray-400 font-medium">
+              <span className="text-sm text-zinc-400">
                 {extendedLeaderboard.length} participants
               </span>
               <div className="ml-auto flex items-center gap-1.5">
                 <Star className="w-4 h-4 text-warning-strong fill-warning-strong" />
-                <span className="text-sm text-warning-strong font-bold">
+                <span className="text-sm text-warning-strong font-semibold font-mono tabular-nums">
                   {activeChallenge.reward} pts prize
                 </span>
               </div>
@@ -315,10 +311,10 @@ export default function LeaderboardPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${
+              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
                 activeTab === tab
-                  ? "bg-surface-4 text-white shadow-border-xs"
-                  : "text-gray-500 hover:text-gray-300"
+                  ? "bg-surface-4 text-zinc-100 shadow-border-xs"
+                  : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               {tab === "current" ? "Current Challenge" : "All-Time Rankings"}
@@ -335,11 +331,11 @@ export default function LeaderboardPage() {
             {activeTab === "current" ? (
               <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
                 <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
-                  <h3 className="text-gray-200 font-bold text-[13px]">
+                  <h3 className="text-base font-medium text-zinc-200">
                     Weekend Warrior Rankings
                   </h3>
-                  <span className="text-[11px] text-gray-600 bg-surface-3 px-2 py-1 rounded-md font-mono font-medium">
-                    Live · Updated now
+                  <span className="text-sm text-zinc-500 bg-surface-3 px-2 py-1 rounded-md font-mono tabular-nums">
+                    Live
                   </span>
                 </div>
                 <div className="divide-y divide-white/[0.04]">
@@ -364,7 +360,7 @@ export default function LeaderboardPage() {
                           {getRankIcon(participant.rank)}
                         </div>
                         <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
                           style={{
                             backgroundColor: participant.avatarColor,
                           }}
@@ -374,15 +370,15 @@ export default function LeaderboardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <p
-                              className={`text-sm text-gray-100 ${
+                              className={`text-sm text-zinc-100 ${
                                 isCurrentUser
-                                  ? "font-extrabold"
-                                  : "font-semibold"
+                                  ? "font-bold"
+                                  : "font-medium"
                               }`}
                             >
                               {participant.name}
                               {isCurrentUser && (
-                                <span className="ml-1 text-accent-blue font-bold">
+                                <span className="ml-1 text-accent-blue font-semibold">
                                   (You)
                                 </span>
                               )}
@@ -401,15 +397,15 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-white font-bold font-mono tabular-nums">
+                          <p className="text-sm text-white font-semibold font-mono tabular-nums">
                             ${participant.spent}
                           </p>
-                          <p className="text-[11px] text-gray-600 font-mono">
+                          <p className="text-sm text-zinc-500 font-mono tabular-nums">
                             of ${participant.target}
                           </p>
                         </div>
                         <div
-                          className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold ${
                             isOver
                               ? "bg-destructive-muted text-destructive border border-destructive/20"
                               : "bg-success-muted text-success border border-success/20"
@@ -433,7 +429,7 @@ export default function LeaderboardPage() {
             ) : (
               <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
                 <div className="px-5 py-4 border-b border-white/[0.06]">
-                  <h3 className="text-gray-200 font-bold text-[13px]">
+                  <h3 className="text-base font-medium text-zinc-200">
                     All-Time Points Leaderboard
                   </h3>
                 </div>
@@ -451,33 +447,33 @@ export default function LeaderboardPage() {
                         {getRankIcon(participant.rank)}
                       </div>
                       <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
                         style={{ backgroundColor: participant.color }}
                       >
                         {participant.avatar}
                       </div>
                       <div className="flex-1">
                         <p
-                          className={`text-sm text-gray-100 ${
+                          className={`text-sm text-zinc-100 ${
                             participant.isCurrentUser
-                              ? "font-extrabold"
-                              : "font-semibold"
+                              ? "font-bold"
+                              : "font-medium"
                           }`}
                         >
                           {participant.name}
                           {participant.isCurrentUser && (
-                            <span className="ml-1 text-accent-blue font-bold">
+                            <span className="ml-1 text-accent-blue font-semibold">
                               (You)
                             </span>
                           )}
                         </p>
-                        <p className="text-[11px] text-gray-600 font-medium">
+                        <p className="text-sm text-zinc-500">
                           {participant.wins} challenge wins
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
-                        <span className="text-sm text-gray-200 font-bold font-mono tabular-nums">
+                        <span className="text-sm text-zinc-200 font-semibold font-mono tabular-nums">
                           {participant.points.toLocaleString()} pts
                         </span>
                       </div>
@@ -492,7 +488,7 @@ export default function LeaderboardPage() {
           <div className="space-y-4">
             {/* Chart */}
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-              <h3 className="text-gray-100 font-bold text-sm mb-4">
+              <h3 className="text-base font-medium text-zinc-100 mb-4">
                 Spending Comparison
               </h3>
               <ResponsiveContainer width="100%" height={180}>
@@ -539,7 +535,7 @@ export default function LeaderboardPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="mt-2 flex items-center gap-2 text-[11px] text-gray-500 font-medium">
+              <div className="mt-2 flex items-center gap-2 text-sm text-zinc-500">
                 <span className="border-t-2 border-dashed border-destructive w-3" />{" "}
                 Target: ${activeChallenge.target}
               </div>
@@ -547,36 +543,36 @@ export default function LeaderboardPage() {
 
             {/* Your Position */}
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-              <h3 className="text-gray-100 font-bold text-sm mb-3">
+              <h3 className="text-base font-medium text-zinc-100 mb-3">
                 Your Position
               </h3>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-accent-blue flex items-center justify-center text-white font-bold">
+                <div className="w-12 h-12 rounded-full bg-accent-blue flex items-center justify-center text-white font-semibold">
                   AC
                 </div>
                 <div>
-                  <p className="text-sm text-white font-extrabold">
+                  <p className="text-sm text-white font-bold">
                     Rank #2 of 6
                   </p>
-                  <p className="text-xs text-gray-500 font-mono font-medium">
+                  <p className="text-sm text-zinc-500 font-mono tabular-nums">
                     $85 spent · $189 remaining
                   </p>
                 </div>
               </div>
               <div className="space-y-2.5 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 font-semibold">
+                  <span className="text-zinc-400 font-medium">
                     vs Jordan Lee (#1)
                   </span>
-                  <span className="text-destructive flex items-center gap-1 font-bold font-mono text-xs">
+                  <span className="text-destructive flex items-center gap-1 font-semibold font-mono tabular-nums text-sm">
                     <CaretUp className="w-3.5 h-3.5" /> +$23 behind
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400 font-semibold">
+                  <span className="text-zinc-400 font-medium">
                     vs Sam Park (#3)
                   </span>
-                  <span className="text-success flex items-center gap-1 font-bold font-mono text-xs">
+                  <span className="text-success flex items-center gap-1 font-semibold font-mono tabular-nums text-sm">
                     <CaretDown className="w-3.5 h-3.5" /> $49 ahead
                   </span>
                 </div>
@@ -587,11 +583,11 @@ export default function LeaderboardPage() {
             <div className="bg-warning-muted border border-warning/15 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Fire className="w-4 h-4 text-warning" />
-                <h3 className="text-warning font-bold text-sm">AI Tip</h3>
+                <h3 className="text-base font-medium text-warning">AI Tip</h3>
               </div>
-              <p className="text-xs text-gray-300 leading-relaxed font-medium">
+              <p className="text-sm text-zinc-300 leading-relaxed">
                 Skip the Jazz Concert this Friday and you&apos;ll jump to{" "}
-                <strong className="text-white font-bold">#1</strong> on the
+                <strong className="text-white font-semibold">#1</strong> on the
                 leaderboard, saving $95 and putting you well under target!
               </p>
             </div>

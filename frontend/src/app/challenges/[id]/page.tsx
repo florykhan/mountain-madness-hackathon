@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft, Trophy } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, Trophy, Fire } from "@phosphor-icons/react/dist/ssr";
 import { PageShell } from "@/components/layout/PageShell";
 import { Leaderboard } from "@/components/challenges/Leaderboard";
 import { BadgesGrid } from "@/components/challenges/BadgesGrid";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/format";
 import { formatDate } from "@/lib/format";
 import challengesData from "@/mocks/challenges.json";
@@ -42,52 +40,66 @@ export default async function ChallengeDetailPage({ params }: Params) {
 
   return (
     <PageShell>
-      <div className="p-4 md:p-6 lg:p-8">
+      <div className="p-6 lg:p-8 space-y-6">
         <Link
           href="/challenges"
-          className="mb-4 inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-200 transition-colors font-medium"
         >
           <ArrowLeft size={18} weight="bold" />
           Back to challenges
         </Link>
 
-        <div className="mb-8">
-          <h1 className="flex items-center gap-2.5 text-2xl font-bold text-slate-900">
-          <Trophy size={26} weight="fill" className="text-primary-600" aria-hidden />
-          {challenge.name}
-        </h1>
+        {/* Hero */}
+        <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5 animate-fade-up">
+          <div className="flex items-center gap-2 mb-3">
+            <Trophy size={20} weight="fill" className="text-warning-strong" />
+            <span className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Challenge Details</span>
+          </div>
+          <h1 className="text-zinc-100 text-xl font-semibold tracking-tight mb-1">
+            {challenge.name}
+          </h1>
           {challenge.description && (
-            <p className="mt-1 text-slate-600">{challenge.description}</p>
+            <p className="text-sm text-zinc-400">{challenge.description}</p>
           )}
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-zinc-500">
             Goal: {formatGoal(challenge.goal, challenge.unit)} · Ends {formatDate(challenge.endDate)}
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="space-y-6">
-            <Card>
-              <h3 className="mb-3 font-semibold text-slate-900">Your progress</h3>
+        <div className="grid gap-6 lg:grid-cols-2 animate-fade-up" style={{ animationDelay: "60ms" }}>
+          <div className="space-y-4">
+            {/* Progress Card */}
+            <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+              <h3 className="mb-3 font-semibold text-zinc-100 text-sm">Your Progress</h3>
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
                     <div
-                      className="h-full rounded-full bg-primary-500 transition-all"
+                      className="h-full rounded-full bg-accent-blue progress-bar"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <p className="mt-2 text-sm text-slate-600">
-                    {formatGoal(challenge.progress || 0, challenge.unit)} / {formatGoal(challenge.goal, challenge.unit)}
-                  </p>
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-sm text-gray-400 font-medium">
+                      {formatGoal(challenge.progress || 0, challenge.unit)} / {formatGoal(challenge.goal, challenge.unit)}
+                    </p>
+                    <span className="text-sm text-white font-bold font-mono tabular-nums">
+                      {Math.round(pct)}%
+                    </span>
+                  </div>
                 </div>
               </div>
-            </Card>
+            </div>
 
+            {/* Streak Card */}
             {challenge.streak != null && (
-              <Card>
-                <h3 className="mb-2 font-semibold text-slate-900">Streak</h3>
-                <p className="text-2xl font-bold text-amber-600">{challenge.streak} days</p>
-              </Card>
+              <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+                <h3 className="mb-2 font-semibold text-zinc-100 text-sm">Streak</h3>
+                <div className="flex items-center gap-2">
+                  <Fire size={20} weight="fill" className="text-warning" />
+                  <p className="text-2xl font-semibold text-warning font-mono tabular-nums">{challenge.streak} days</p>
+                </div>
+              </div>
             )}
 
             <Leaderboard

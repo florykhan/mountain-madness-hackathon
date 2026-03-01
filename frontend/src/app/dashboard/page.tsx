@@ -125,23 +125,23 @@ export default function DashboardPage() {
 
   return (
     <PageShell>
-      <div className="p-6 lg:p-8 space-y-6">
+      <div className="p-6 lg:p-8 space-y-7">
         {/* Greeting */}
         <div className="flex items-center justify-between flex-wrap gap-4 animate-fade-up">
           <div>
             <h2
-              className="text-white text-xl font-extrabold tracking-tight"
+              className="text-white text-xl lg:text-3xl font-medium tracking-tight"
               style={{ textWrap: "balance" }}
             >
               Good morning, {currentUser.name.split(" ")[0]}
             </h2>
-            <p className="text-sm text-gray-400 mt-1 font-semibold">
+            <p className="text-sm lg:text-base text-gray-400 mt-1 font-medium">
               Your financial snapshot for this week.
             </p>
           </div>
           <Link
             href="/calendar"
-            className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] text-gray-200 px-4 py-2 rounded-lg hover:bg-white/[0.1] transition-colors text-[13px] font-bold focus-visible:ring-2 focus-visible:ring-gray-400"
+            className="flex items-center gap-2 bg-white/[0.06] border border-white/[0.08] text-gray-200 px-4 py-2 rounded-lg hover:bg-white/[0.1] transition-colors text-sm font-medium focus-visible:ring-2 focus-visible:ring-gray-400"
           >
             <TrendUp size={16} weight="bold" aria-hidden="true" />
             Predict This Week
@@ -154,7 +154,7 @@ export default function DashboardPage() {
           style={{ animationDelay: "60ms" }}
         >
           {/* Health Score */}
-          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
               <HeartStraight
                 size={18}
@@ -162,15 +162,15 @@ export default function DashboardPage() {
                 className="text-gray-500"
                 aria-hidden="true"
               />
-              <span className="flex items-center gap-1 text-[11px] text-success font-mono font-bold">
+              <span className="flex items-center gap-1 text-sm text-success font-mono font-medium">
                 <TrendUp size={14} weight="bold" aria-hidden="true" />+
                 {currentUser.healthScoreTrend}
               </span>
             </div>
-            <div className="text-2xl font-extrabold text-white font-mono tabular-nums">
+            <div className="text-3xl font-medium text-white font-mono tabular-nums">
               {score}
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 font-semibold">
+            <p className="text-sm text-gray-400 mt-0.5 font-medium">
               Health Score
             </p>
             <div className="mt-3 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
@@ -190,7 +190,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Predicted This Week */}
-          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
               <TrendUp
                 size={18}
@@ -198,23 +198,23 @@ export default function DashboardPage() {
                 className="text-gray-500"
                 aria-hidden="true"
               />
-              <span className="text-[11px] text-destructive font-mono font-bold">
+              <span className="text-sm text-destructive font-mono font-medium">
                 +$26
               </span>
             </div>
-            <div className="text-2xl font-extrabold text-white font-mono tabular-nums">
+            <div className="text-3xl font-medium text-white font-mono tabular-nums">
               ${forecast.next7DaysTotal}
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 font-semibold">
+            <p className="text-sm text-gray-400 mt-0.5 font-medium">
               Predicted This Week
             </p>
-            <p className="text-[11px] text-gray-600 mt-1 font-mono font-medium">
+            <p className="text-sm text-gray-600 mt-1 font-mono font-medium">
               82% confidence
             </p>
           </div>
 
           {/* Points */}
-          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
               <Star
                 size={18}
@@ -222,23 +222,23 @@ export default function DashboardPage() {
                 className="text-gray-500"
                 aria-hidden="true"
               />
-              <span className="text-[11px] text-gray-500 font-semibold">
+              <span className="text-sm text-gray-500 font-medium">
                 Silver Saver
               </span>
             </div>
-            <div className="text-2xl font-extrabold text-white font-mono tabular-nums">
+            <div className="text-3xl font-medium text-white font-mono tabular-nums">
               {currentUser.points.toLocaleString()}
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 font-semibold">
+            <p className="text-sm text-gray-400 mt-0.5 font-medium">
               Total Points
             </p>
-            <p className="text-[11px] text-gray-600 mt-1 font-mono font-medium">
+            <p className="text-sm text-gray-600 mt-1 font-mono font-medium">
               660 pts to Gold
             </p>
           </div>
 
           {/* Weekend Target */}
-          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
+          <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-3">
               <Trophy
                 size={18}
@@ -246,17 +246,17 @@ export default function DashboardPage() {
                 className="text-gray-500"
                 aria-hidden="true"
               />
-              <span className="text-[11px] text-gray-500 font-semibold">
+              <span className="text-sm text-gray-500 font-medium">
                 2 active
               </span>
             </div>
-            <div className="text-2xl font-extrabold text-white font-mono tabular-nums">
+            <div className="text-3xl font-medium text-white font-mono tabular-nums">
               $274
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5 font-semibold">
+            <p className="text-sm text-gray-400 mt-0.5 font-medium">
               Weekend Target
             </p>
-            <p className="text-[11px] text-gray-600 mt-1 font-mono font-medium">
+            <p className="text-sm text-gray-600 mt-1 font-mono font-medium">
               $85 spent of $274
             </p>
           </div>
@@ -270,10 +270,10 @@ export default function DashboardPage() {
           {/* Spending Chart */}
           <div className="lg:col-span-2 bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[13px] text-gray-200 font-bold">
+              <h3 className="text-base text-gray-200 font-medium">
                 Predicted vs Actual
               </h3>
-              <span className="text-[11px] text-gray-600 font-mono font-medium">
+              <span className="text-sm text-gray-600 font-mono font-medium">
                 Last 9 weeks
               </span>
             </div>
@@ -367,13 +367,13 @@ export default function DashboardPage() {
             <div className="flex items-center gap-5 mt-3">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-[2px] rounded bg-accent-blue" />
-                <span className="text-[11px] text-gray-500 font-semibold">
+                <span className="text-sm text-gray-500 font-medium">
                   Predicted
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-[2px] rounded bg-success" />
-                <span className="text-[11px] text-gray-500 font-semibold">
+                <span className="text-sm text-gray-500 font-medium">
                   Actual
                 </span>
               </div>
@@ -383,12 +383,12 @@ export default function DashboardPage() {
           {/* Category Breakdown */}
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[13px] text-gray-200 font-bold">
+              <h3 className="text-base text-gray-200 font-medium">
                 This Week
               </h3>
               <Link
                 href="/calendar"
-                className="text-[11px] text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors font-semibold"
+                className="text-sm text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors font-medium"
               >
                 Details{" "}
                 <ArrowRight size={14} weight="bold" aria-hidden="true" />
@@ -424,11 +424,11 @@ export default function DashboardPage() {
                         opacity: 0.75,
                       }}
                     />
-                    <span className="text-[12px] text-gray-400 font-semibold">
+                    <span className="text-sm text-gray-400 font-medium">
                       {item.name}
                     </span>
                   </div>
-                  <span className="text-[12px] font-mono text-gray-200 tabular-nums font-bold">
+                  <span className="text-sm font-mono text-gray-200 tabular-nums font-medium">
                     ${item.value}
                   </span>
                 </div>
@@ -436,10 +436,10 @@ export default function DashboardPage() {
             </div>
 
             <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between">
-              <span className="text-[12px] text-gray-500 font-semibold">
+              <span className="text-sm text-gray-500 font-medium">
                 Total
               </span>
-              <span className="text-[13px] font-mono font-bold text-gray-100 tabular-nums">
+              <span className="text-lg font-mono font-medium text-gray-100 tabular-nums">
                 ${totalCategorySpend}
               </span>
             </div>
@@ -454,12 +454,12 @@ export default function DashboardPage() {
           {/* Active Challenges */}
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[13px] text-gray-200 font-bold">
+              <h3 className="text-base text-gray-200 font-medium">
                 Active Challenges
               </h3>
               <Link
                 href="/challenges"
-                className="text-[11px] text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors font-semibold"
+                className="text-sm text-gray-500 hover:text-gray-300 flex items-center gap-1 transition-colors font-medium"
               >
                 View All{" "}
                 <ArrowRight size={14} weight="bold" aria-hidden="true" />
@@ -481,7 +481,7 @@ export default function DashboardPage() {
                           className="text-gray-500 flex-shrink-0"
                           aria-hidden="true"
                         />
-                        <span className="text-[13px] text-gray-200 truncate font-semibold">
+                        <span className="text-sm text-gray-200 truncate font-medium">
                           {challenge.name}
                         </span>
                       </div>
@@ -494,7 +494,7 @@ export default function DashboardPage() {
                             aria-hidden="true"
                           />
                         )}
-                        <span className="text-[11px] text-gray-500 font-mono tabular-nums font-bold">
+                        <span className="text-sm text-gray-500 font-mono tabular-nums font-medium">
                           ${challenge.current} / ${challenge.target}
                         </span>
                       </div>
@@ -512,10 +512,10 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-gray-600 font-medium">
+                      <span className="text-sm text-gray-600 font-medium">
                         {pct}% of budget used
                       </span>
-                      <span className="text-[11px] text-gray-500 font-mono tabular-nums font-bold">
+                      <span className="text-sm text-gray-500 font-mono tabular-nums font-medium">
                         {challenge.reward} pts
                       </span>
                     </div>
@@ -528,10 +528,10 @@ export default function DashboardPage() {
           {/* Health Score Trend */}
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-[13px] text-gray-200 font-bold">
+              <h3 className="text-base text-gray-200 font-medium">
                 Health Score Trend
               </h3>
-              <span className="text-[11px] text-success/80 font-mono font-bold">
+              <span className="text-sm text-success/80 font-mono font-medium">
                 +{currentUser.healthScoreTrend} this month
               </span>
             </div>
@@ -603,10 +603,10 @@ export default function DashboardPage() {
                   key={item.label}
                   className="bg-white/[0.03] border border-white/[0.04] rounded-lg p-2.5 text-center"
                 >
-                  <div className="text-[13px] font-mono font-extrabold text-white tabular-nums">
+                  <div className="text-lg font-mono font-medium text-white tabular-nums">
                     {item.value}
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-0.5 leading-tight font-semibold">
+                  <div className="text-xs text-gray-500 mt-0.5 leading-tight uppercase tracking-wide font-medium">
                     {item.label}
                   </div>
                 </div>
@@ -636,7 +636,7 @@ export default function DashboardPage() {
                 weight="bold"
                 aria-hidden="true"
               />
-              <span className="text-[12px] font-bold">{action.label}</span>
+              <span className="text-sm font-medium">{action.label}</span>
             </Link>
           ))}
         </div>
