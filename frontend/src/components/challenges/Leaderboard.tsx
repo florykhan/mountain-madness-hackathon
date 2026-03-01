@@ -1,6 +1,6 @@
 "use client";
 
-import { Medal, User } from "lucide-react";
+import { Medal } from "@phosphor-icons/react";
 
 interface LeaderboardEntry {
   rank: number;
@@ -31,7 +31,8 @@ export function Leaderboard({
             <div className="flex items-center gap-2">
               {entry.rank <= 3 ? (
                 <Medal
-                  className="h-4 w-4"
+                  size={18}
+                  weight="fill"
                   style={{
                     color:
                       entry.rank === 1

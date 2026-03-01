@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { SpinnerGap } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 interface LoadingStateProps {
@@ -14,7 +14,7 @@ export function LoadingState({ message = "Loading...", className }: LoadingState
         className
       )}
     >
-      <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      <SpinnerGap size={32} weight="bold" className="animate-spin text-primary-500" />
       <p className="text-sm text-slate-600">{message}</p>
     </div>
   );

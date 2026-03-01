@@ -11,15 +11,15 @@ import {
   Cell,
 } from "recharts";
 import {
-  TrendingUp,
-  TrendingDown,
+  TrendUp,
+  TrendDown,
   CheckCircle,
   XCircle,
   ArrowRight,
-  RefreshCw,
+  ArrowClockwise,
   Info,
-  Sparkles,
-} from "lucide-react";
+  Sparkle,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";

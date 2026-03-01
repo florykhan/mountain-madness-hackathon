@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Send, Zap, TrendingUp, Trophy, Heart, CreditCard, Calendar, Loader2 } from "lucide-react";
+import { PaperPlaneTilt, Lightning, TrendUp, Trophy, HeartStraight, CreditCard, CalendarBlank, SpinnerGap } from "@phosphor-icons/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { ChatWindow, type ChatMessage } from "@/components/coach/ChatWindow";
 import { api } from "@/lib/api";
@@ -11,11 +11,11 @@ const FALLBACK_RESPONSES = chatResponses.responses as Record<string, string>;
 const TYPING_INTERVAL_MS = 10;
 
 const SUGGESTED_PROMPTS = [
-  { label: "Weekend spending?", icon: TrendingUp, query: "What will I spend this weekend?" },
+  { label: "Weekend spending?", icon: TrendUp, query: "What will I spend this weekend?" },
   { label: "Create challenge", icon: Trophy, query: "Create a savings challenge for me" },
-  { label: "Health score", icon: Heart, query: "How's my financial health?" },
+  { label: "Health score", icon: HeartStraight, query: "How's my financial health?" },
   { label: "My balance", icon: CreditCard, query: "What's my balance?" },
-  { label: "Calendar events", icon: Calendar, query: "What's on my calendar this week?" },
+  { label: "Calendar events", icon: CalendarBlank, query: "What's on my calendar this week?" },
 ];
 
 function pickFallbackResponse(input: string): string {
@@ -128,7 +128,7 @@ export default function CoachPage() {
         <div className="flex-shrink-0 px-6 py-4 bg-white border-b border-slate-200">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+              <Lightning size={22} weight="fill" className="text-white" />
             </div>
             <div>
               <h3 className="text-slate-800 font-semibold">FutureSpend AI Assistant</h3>
@@ -161,7 +161,7 @@ export default function CoachPage() {
                 disabled={loading}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs text-slate-600 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50 transition-all whitespace-nowrap flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <prompt.icon className="w-3.5 h-3.5" />
+                <prompt.icon size={16} weight="bold" />
                 {prompt.label}
               </button>
             ))}
@@ -191,9 +191,9 @@ export default function CoachPage() {
               className="w-11 h-11 bg-primary-600 rounded-xl flex items-center justify-center hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 text-white animate-spin" />
+                <SpinnerGap size={22} weight="bold" className="text-white animate-spin" />
               ) : (
-                <Send className="w-4 h-4 text-white" />
+                <PaperPlaneTilt size={18} weight="fill" className="text-white" />
               )}
             </button>
           </form>

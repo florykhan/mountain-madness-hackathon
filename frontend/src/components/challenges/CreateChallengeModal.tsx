@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/Button";
 
 interface CreateChallengeModalProps {
@@ -48,7 +48,7 @@ export function CreateChallengeModal({ open, onClose, onSubmit }: CreateChalleng
             className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
             aria-label="Close"
           >
-            <X className="h-5 w-5" />
+            <X size={22} weight="bold" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">

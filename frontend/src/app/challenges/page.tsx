@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react";
 import {
   Trophy,
-  Target,
+  Crosshair,
   Star,
   Plus,
   Clock,
-  Zap,
-  TrendingDown,
-  Flame,
+  Lightning,
+  TrendDown,
+  Fire,
   CheckCircle,
   XCircle,
-  Users,
-} from "lucide-react";
+  UsersThree,
+} from "@phosphor-icons/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";
 import challengesData from "@/mocks/challenges.json";

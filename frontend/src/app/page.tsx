@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Upload, ArrowRight, CheckCircle2 } from "lucide-react";
+import { CalendarBlank, UploadSimple, ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import { PageShell } from "@/components/layout/PageShell";
 import { ScrollArrow } from "@/components/landing/ScrollArrow";
 import { HeroLockup } from "@/components/landing/HeroLockup";
@@ -107,14 +107,14 @@ export default function HomePage() {
                   href="/dashboard"
                   className="group inline-flex h-12 min-w-[180px] items-center justify-center gap-2.5 rounded-xl bg-primary-200 px-6 text-base font-semibold text-primary-900 shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] hover:bg-primary-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
-                  <Calendar className="h-5 w-5 transition-transform duration-200 group-hover:scale-105" />
+                  <CalendarBlank size={22} weight="bold" className="transition-transform duration-200 group-hover:scale-105" />
                   Connect Calendar (mock)
                 </Link>
                 <Link
                   href="/dashboard"
                   className="group inline-flex h-12 min-w-[180px] items-center justify-center gap-2.5 rounded-xl border border-white/25 bg-white/[0.07] px-6 text-base font-semibold text-white backdrop-blur-md transition-all duration-200 hover:scale-[1.02] hover:border-white/40 hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
-                  <Upload className="h-5 w-5 transition-transform duration-200 group-hover:scale-105" />
+                  <UploadSimple size={22} weight="bold" className="transition-transform duration-200 group-hover:scale-105" />
                   Upload Transactions CSV (mock)
                 </Link>
               </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
                       <h3 className="text-sm font-semibold text-white sm:text-base">{step.title}</h3>
                       <p className="mt-1.5 text-xs leading-relaxed text-slate-400 sm:text-sm">{step.body}</p>
                     </div>
-                    <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-primary-400/90" />
+                    <CheckCircle size={22} weight="fill" className="flex-shrink-0 text-primary-400/90" />
                   </div>
                 ))}
               </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
                   className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-xl bg-primary-200 px-8 text-base font-semibold text-primary-900 shadow-[0_4px_24px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] hover:bg-primary-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
                   Go to Dashboard
-                  <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                  <ArrowRight size={22} weight="bold" className="transition-transform duration-200 group-hover:translate-x-0.5" />
                 </Link>
               </div>
             </div>

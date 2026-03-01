@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { User, Bot } from "lucide-react";
+import { User, Robot } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 export interface ChatMessage {
@@ -54,9 +54,9 @@ export function ChatWindow({ messages, loading, streamingMessageId, className }:
               )}
             >
               {msg.role === "user" ? (
-                <User className="h-4 w-4 text-primary-600" />
+                <User size={18} weight="fill" className="text-primary-600" />
               ) : (
-                <Bot className="h-4 w-4 text-slate-600" />
+                <Robot size={18} weight="fill" className="text-slate-600" />
               )}
             </div>
             <div
@@ -77,7 +77,7 @@ export function ChatWindow({ messages, loading, streamingMessageId, className }:
         {loading && (
           <div className="flex gap-3">
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-100">
-              <Bot className="h-4 w-4 text-slate-600" />
+              <Robot size={18} weight="fill" className="text-slate-600" />
             </div>
             <div className="rounded-2xl bg-slate-100 px-4 py-2.5 text-sm text-slate-500">
               <span className="inline-flex gap-1">

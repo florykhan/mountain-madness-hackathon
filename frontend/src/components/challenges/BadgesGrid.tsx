@@ -1,14 +1,14 @@
 "use client";
 
-import { Trophy, Flame, Users, Target, Sunrise, Lock } from "lucide-react";
+import { Trophy, Fire, UsersThree, Crosshair, SunHorizon, Lock } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number; weight?: string }>> = {
   Trophy,
-  Flame,
-  Users,
-  Target,
-  Sunrise,
+  Flame: Fire,
+  Users: UsersThree,
+  Target: Crosshair,
+  Sunrise: SunHorizon,
 };
 
 interface Badge {
@@ -47,9 +47,9 @@ export function BadgesGrid({ badges }: BadgesGridProps) {
                 )}
               >
                 {badge.earned ? (
-                  <Icon className="h-6 w-6 text-amber-600" />
+                  <Icon className="text-amber-600" size={26} weight="fill" />
                 ) : (
-                  <Lock className="h-6 w-6 text-slate-400" />
+                  <Lock size={26} weight="fill" className="text-slate-400" />
                 )}
               </div>
               <p className="text-xs font-medium text-slate-900">{badge.name}</p>

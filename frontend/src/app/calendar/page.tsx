@@ -13,13 +13,13 @@ import {
   isToday,
 } from "date-fns";
 import {
-  ChevronLeft,
-  ChevronRight,
-  DollarSign,
+  CaretLeft,
+  CaretRight,
+  CurrencyDollar,
   Clock,
   X,
-  CalendarDays,
-} from "lucide-react";
+  CalendarDots,
+} from "@phosphor-icons/react";
 import { cva } from "class-variance-authority";
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";

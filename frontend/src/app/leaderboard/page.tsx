@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react";
 import {
   Trophy,
-  TrendingUp,
-  TrendingDown,
+  TrendUp,
+  TrendDown,
   Crown,
   Medal,
   Star,
-  Target,
-  ChevronUp,
-  ChevronDown,
-  Flame,
-} from "lucide-react";
+  Crosshair,
+  CaretUp,
+  CaretDown,
+  Fire,
+} from "@phosphor-icons/react";
 import {
   BarChart,
   Bar,

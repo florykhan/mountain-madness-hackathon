@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar as CalendarIcon, Info } from "lucide-react";
+import { CalendarBlank, Info } from "@phosphor-icons/react";
 import { formatCurrency, formatTime, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/lib/types";
@@ -37,7 +37,7 @@ export function EventCard({ event }: EventCardProps) {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="flex items-start gap-3">
           <div className="rounded-lg bg-slate-100 p-2">
-            <CalendarIcon className="h-5 w-5 text-slate-600" />
+            <CalendarBlank size={22} weight="duotone" className="text-slate-600" />
           </div>
           <div>
             <h3 className="font-medium text-slate-900">{event.title}</h3>
@@ -67,7 +67,7 @@ export function EventCard({ event }: EventCardProps) {
               className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
               title="Why this prediction?"
             >
-              <Info className="h-4 w-4" />
+              <Info size={18} weight="bold" />
             </button>
           )}
         </div>

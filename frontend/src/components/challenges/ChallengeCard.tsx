@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, Users } from "lucide-react";
+import { Trophy, UsersThree } from "@phosphor-icons/react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/format";
@@ -43,7 +43,7 @@ export function ChallengeCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex gap-3">
           <div className="rounded-lg bg-amber-50 p-2">
-            <Trophy className="h-5 w-5 text-amber-600" />
+            <Trophy size={22} weight="fill" className="text-amber-600" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-900">{name}</h3>
@@ -52,7 +52,7 @@ export function ChallengeCard({
               Goal: {formatGoal(goal, unit)} · Ends {formatDate(endDate)}
             </p>
             <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-              <Users className="h-3.5 w-3" />
+              <UsersThree size={16} weight="bold" />
               {participants} participants
             </div>
           </div>

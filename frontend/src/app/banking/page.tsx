@@ -4,18 +4,18 @@ import { useState, useEffect, useCallback } from "react";
 import {
   CreditCard,
   Lock,
-  Unlock,
-  TrendingUp,
-  TrendingDown,
+  LockOpen,
+  TrendUp,
+  TrendDown,
   ArrowUpRight,
   ArrowDownLeft,
-  Zap,
+  Lightning,
   ShieldCheck,
   Plus,
   Minus,
   Wallet,
-  BarChart3,
-} from "lucide-react";
+  ChartBar,
+} from "@phosphor-icons/react";
 import {
   BarChart,
   Bar,
