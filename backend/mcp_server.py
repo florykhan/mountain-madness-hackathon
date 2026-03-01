@@ -13,13 +13,10 @@ For FastMCP Cloud deployment, use the entrypoint:
 
 from __future__ import annotations
 
-import nest_asyncio
-nest_asyncio.apply()
-
 import json
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from agent.tools import (
     analyze_calendar_events,
