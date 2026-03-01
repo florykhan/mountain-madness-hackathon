@@ -13,6 +13,9 @@ For FastMCP Cloud deployment, use the entrypoint:
 
 from __future__ import annotations
 
+import nest_asyncio
+nest_asyncio.apply()
+
 import json
 from typing import Any
 
