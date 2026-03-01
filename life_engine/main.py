@@ -74,6 +74,12 @@ def predict(request:PredictRequest):
         "features":features
     }
 
+@app.post("/calendar/upcoming")
+def upcoming_events(credentials: dict=None):
+    events=get_upcoming_events(credentials)
+    return {"events": events}
+
+
 @app.post("/challenge", response_model=ChallengeResponse)
 def challenge(request:ChallengeRequest):
     mock_user_history={
