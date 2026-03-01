@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Trophy,
   Target,
@@ -15,6 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
+import { api } from "@/lib/api";
 import challengesData from "@/mocks/challenges.json";
 
 function ProgressRing({
@@ -79,11 +80,43 @@ const pastChallenges = [
   { id: "p3", name: "Entertainment Budget", target: 150, actual: 183, reward: 300, status: "lost" as const, month: "Jan 2025" },
 ];
 const friendSuggestions = ["Jordan Lee", "Sam Park", "Taylor Kim", "Morgan Walsh"];
+const fallbackList = (challengesData as { list: ChallengeItem[] }).list;
 
 export default function ChallengesPage() {
-  const { list } = challengesData as { list: ChallengeItem[] };
+  const [list, setList] = useState<ChallengeItem[]>(fallbackList);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newChallenge, setNewChallenge] = useState({ name: "", target: "200", friends: [] as string[] });
+  const [loading, setLoading] = useState(!!process.env.NEXT_PUBLIC_API_URL);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      setLoading(false);
+      return;
+    }
+    api
+      .getDashboard()
+      .then((data) => {
+        const ch = data.challenges?.list ?? [];
+        if (ch.length > 0) {
+          setList(
+            ch.map((c: { id: string; name: string; goal: number; unit: string; endDate: string; participants: number; joined?: boolean; progress?: number; streak?: number; description?: string }) => ({
+              id: c.id,
+              name: c.name,
+              goal: c.goal,
+              unit: c.unit,
+              endDate: c.endDate,
+              participants: c.participants,
+              joined: c.joined ?? false,
+              progress: c.progress ?? 0,
+              streak: c.streak ?? 0,
+              description: c.description ?? "",
+            }))
+          );
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const toggleFriend = (friend: string) => {
     setNewChallenge((prev) => ({
@@ -98,6 +131,16 @@ export default function ChallengesPage() {
   const totalPoints = 2340;
   const challengesWon = "3 / 4";
   const totalSaved = "$347";
+
+  if (loading) {
+    return (
+      <PageShell>
+        <div className="p-6 flex items-center justify-center min-h-[200px]">
+          <p className="text-slate-500">Loading challenges...</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

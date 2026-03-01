@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
+import { api } from "@/lib/api";
 import eventsData from "@/mocks/events.json";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -69,10 +70,36 @@ function normalizeEvent(ev: EventItem): NormalizedEvent {
 }
 
 export default function CalendarPage() {
-  const events = useMemo(
-    () => (eventsData as EventItem[]).map(normalizeEvent),
-    []
-  );
+  const [rawEvents, setRawEvents] = useState<EventItem[]>(eventsData as EventItem[]);
+  const [loading, setLoading] = useState(!!process.env.NEXT_PUBLIC_API_URL);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      setLoading(false);
+      return;
+    }
+    api
+      .getDashboard()
+      .then((data) => {
+        if (data.events?.length) {
+          setRawEvents(
+            data.events.map((e) => ({
+              id: e.id,
+              title: e.title,
+              start: e.start,
+              end: e.end ?? e.start,
+              calendarType: e.calendarType ?? "personal",
+              predictedSpend: e.predictedSpend ?? 0,
+              category: e.category ?? "other",
+            }))
+          );
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const events = useMemo(() => rawEvents.map(normalizeEvent), [rawEvents]);
   const [selectedEvent, setSelectedEvent] = useState<NormalizedEvent | null>(null);
   const [activeCalendars, setActiveCalendars] = useState<string[]>([
     "Work",
@@ -103,6 +130,16 @@ export default function CalendarPage() {
     const day = dateStr.slice(-2);
     return dates.indexOf(day);
   };
+
+  if (loading) {
+    return (
+      <PageShell>
+        <div className="p-6 flex items-center justify-center min-h-[200px]">
+          <p className="text-slate-500">Loading calendar...</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

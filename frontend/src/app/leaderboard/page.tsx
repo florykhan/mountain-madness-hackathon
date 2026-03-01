@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Trophy,
   TrendingUp,
@@ -23,8 +23,11 @@ import {
   Cell,
 } from "recharts";
 import { PageShell } from "@/components/layout/PageShell";
+import { api } from "@/lib/api";
 
-const extendedLeaderboard = [
+const COLORS = ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444", "#06b6d4"];
+
+const fallbackLeaderboard = [
   { rank: 1, id: "u1", name: "Jordan Lee", avatar: "JL", spent: 62, target: 274, status: "under" as const, avatarColor: "#10b981" },
   { rank: 2, id: "u2", name: "Alex Chen", avatar: "AC", spent: 85, target: 274, status: "under" as const, avatarColor: "#3b82f6", isCurrentUser: true },
   { rank: 3, id: "u3", name: "Sam Park", avatar: "SP", spent: 134, target: 274, status: "under" as const, avatarColor: "#8b5cf6" },
@@ -42,7 +45,7 @@ const allTimeLeaderboard = [
   { rank: 6, name: "Riley Nguyen", avatar: "RN", points: 890, wins: 2, color: "#ef4444" },
 ];
 
-const activeChallenge = {
+const fallbackChallenge = {
   name: "Weekend Warrior",
   target: 274,
   deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
@@ -51,6 +54,41 @@ const activeChallenge = {
 
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState<"current" | "alltime">("current");
+  const [extendedLeaderboard, setExtendedLeaderboard] = useState(fallbackLeaderboard);
+  const [activeChallenge, setActiveChallenge] = useState(fallbackChallenge);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) return;
+    api
+      .getDashboard()
+      .then((data) => {
+        const list = data.challenges?.list ?? [];
+        const lb = data.challenges?.leaderboard ?? [];
+        const ch = list[0];
+        if (ch && lb.length > 0) {
+          setActiveChallenge({
+            name: ch.name,
+            target: ch.goal,
+            deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            reward: 650,
+          });
+          setExtendedLeaderboard(
+            lb.map((e: { rank: number; name: string; value: number }, i: number) => ({
+              rank: e.rank,
+              id: `u${i + 1}`,
+              name: e.name,
+              avatar: e.name.split(" ").map((n) => n[0]).join("").slice(0, 2),
+              spent: e.value,
+              target: ch.goal,
+              status: (e.value <= ch.goal ? "under" : "over") as const,
+              avatarColor: COLORS[i % COLORS.length],
+              ...(e.name === "You" ? { isCurrentUser: true } : {}),
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const barData = extendedLeaderboard.map((p) => ({
     name: p.name.split(" ")[0],

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { PageShell } from "@/components/layout/PageShell";
+import { api } from "@/lib/api";
 import eventsData from "@/mocks/events.json";
 import predictionsData from "@/mocks/predictions.json";
 
@@ -48,7 +49,8 @@ type EventRow = {
   calendar: string;
 };
 
-function toEventRow(evt: (typeof eventsData)[0]): EventRow {
+type EventInput = { id: string; title: string; start: string; end?: string; predictedSpend?: number; category?: string; calendarType?: string };
+function toEventRow(evt: EventInput): EventRow {
   const start = new Date(evt.start);
   return {
     id: evt.id,
@@ -62,20 +64,76 @@ function toEventRow(evt: (typeof eventsData)[0]): EventRow {
   };
 }
 
-const weeklyEvents: EventRow[] = eventsData.map(toEventRow);
-
-const breakdownData = [
-  { name: "Food", value: predictionsData.spendingPrediction.breakdown.food, color: "#3b82f6" },
-  { name: "Entertainment", value: predictionsData.spendingPrediction.breakdown.entertainment, color: "#f59e0b" },
-  { name: "Transport", value: predictionsData.spendingPrediction.breakdown.transport, color: "#10b981" },
-  { name: "Other", value: predictionsData.spendingPrediction.breakdown.other, color: "#6b7280" },
+const fallbackEvents = (eventsData as EventInput[]).map(toEventRow);
+const fallbackPrediction = predictionsData.spendingPrediction;
+const fallbackBreakdown = [
+  { name: "Food", value: fallbackPrediction.breakdown.food, color: "#3b82f6" },
+  { name: "Entertainment", value: fallbackPrediction.breakdown.entertainment, color: "#f59e0b" },
+  { name: "Transport", value: fallbackPrediction.breakdown.transport, color: "#10b981" },
+  { name: "Other", value: fallbackPrediction.breakdown.other, color: "#6b7280" },
 ];
 
 export default function PredictionsPage() {
   const [activeScenario, setActiveScenario] = useState<string | null>(null);
   const [skippedEvents, setSkippedEvents] = useState<Set<string>>(new Set());
+  const [weeklyEvents, setWeeklyEvents] = useState<EventRow[]>(fallbackEvents);
+  const [spendingPrediction, setSpendingPrediction] = useState(fallbackPrediction);
+  const [breakdownData, setBreakdownData] = useState(fallbackBreakdown);
+  const [loading, setLoading] = useState(!!process.env.NEXT_PUBLIC_API_URL);
 
-  const { spendingPrediction, whatIfScenarios } = predictionsData;
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      setLoading(false);
+      return;
+    }
+    api
+      .getDashboard()
+      .then((data) => {
+        if (data.events?.length) {
+          const rows = data.events.map((e) =>
+            toEventRow({
+              id: e.id,
+              title: e.title,
+              start: e.start,
+              end: e.end,
+              predictedSpend: e.predictedSpend,
+              category: e.category,
+              calendarType: e.calendarType,
+            })
+          );
+          setWeeklyEvents(rows);
+        }
+        const pred = data.forecast;
+        if (pred?.next7DaysTotal != null) {
+          const total = pred.next7DaysTotal;
+          const breakdown = pred.byCategory ?? [];
+          setSpendingPrediction({
+            total: Math.round(total),
+            confidence: 0.82,
+            lastWeekActual: fallbackPrediction.lastWeekActual,
+            breakdown: {
+              food: breakdown.find((c: { key: string }) => c.key === "food")?.value ?? 0,
+              entertainment: breakdown.find((c: { key: string }) => c.key === "entertainment")?.value ?? 0,
+              transport: breakdown.find((c: { key: string }) => c.key === "transport")?.value ?? 0,
+              other: breakdown.find((c: { key: string }) => c.key === "other")?.value ?? 37,
+            },
+          });
+          setBreakdownData(
+            breakdown.length
+              ? breakdown.map((c: { name: string; value: number }) => ({
+                  name: c.name,
+                  value: c.value,
+                  color: categoryColors[c.name.toLowerCase()] ?? "#6b7280",
+                }))
+              : fallbackBreakdown
+          );
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const { whatIfScenarios } = predictionsData;
   const currentTotal = weeklyEvents
     .filter((e) => !skippedEvents.has(e.id))
     .reduce((sum, e) => sum + e.predictedSpend, 0);
@@ -110,6 +168,16 @@ export default function PredictionsPage() {
     setSkippedEvents(new Set());
     setActiveScenario(null);
   };
+
+  if (loading) {
+    return (
+      <PageShell>
+        <div className="p-6 flex items-center justify-center min-h-[200px]">
+          <p className="text-slate-500">Loading predictions...</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

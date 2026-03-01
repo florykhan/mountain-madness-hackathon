@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   AreaChart,
@@ -25,6 +26,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
+import { api } from "@/lib/api";
 import forecastData from "@/mocks/forecast.json";
 
 const currentUser = { name: "Alex Demo", healthScore: 74, healthScoreTrend: 6, points: 2340 };
@@ -45,7 +47,13 @@ const healthScoreHistory = [
   { date: "Feb", score: 68 },
   { date: "Mar", score: 74 },
 ];
-const activeChallenges = [
+const fallbackForecast = forecastData as {
+  next7DaysTotal: number;
+  remainingBudget: number;
+  monthlyBudget: number;
+  byCategory: Array<{ name: string; value: number; key: string }>;
+};
+const fallbackChallenges = [
   { id: "c1", name: "Weekend Warrior", current: 85, target: 274, reward: 650 },
   { id: "c2", name: "Dining Out Diet", current: 45, target: 180, reward: 400 },
 ];
@@ -59,20 +67,57 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function DashboardPage() {
-  const forecast = forecastData as {
-    next7DaysTotal: number;
-    remainingBudget: number;
-    monthlyBudget: number;
-    byCategory: { name: string; value: number; key: string }[];
-  };
+  const [forecast, setForecast] = useState(fallbackForecast);
+  const [activeChallenges, setActiveChallenges] = useState(fallbackChallenges);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      setLoading(false);
+      return;
+    }
+    api
+      .getDashboard()
+      .then((data) => {
+        setForecast(data.forecast);
+        const list = data.challenges?.list ?? [];
+        if (list.length > 0) {
+          setActiveChallenges(
+            list.slice(0, 2).map((c: { id: string; name: string; goal: number; endDate?: string }) => ({
+              id: c.id,
+              name: c.name,
+              current: Math.round(c.goal * 0.35),
+              target: c.goal,
+              reward: 650,
+            }))
+          );
+        }
+      })
+      .catch(() => {
+        setForecast(fallbackForecast);
+        setActiveChallenges(fallbackChallenges);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   const score = currentUser.healthScore;
   const scoreColor = score >= 75 ? "#10b981" : score >= 50 ? "#f59e0b" : "#ef4444";
 
-  const pieData = forecast.byCategory.map((c) => ({
+  const pieData = (forecast.byCategory ?? []).map((c) => ({
     name: c.name,
     value: c.value,
     color: categoryColors[c.name] ?? "#6b7280",
   }));
+
+  if (loading) {
+    return (
+      <PageShell>
+        <div className="p-6 flex items-center justify-center min-h-[200px]">
+          <p className="text-slate-500">Loading dashboard...</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

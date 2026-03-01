@@ -4,9 +4,10 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Send, Zap, TrendingUp, Trophy, Heart, CreditCard, Calendar, Loader2 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { ChatWindow, type ChatMessage } from "@/components/coach/ChatWindow";
+import { api } from "@/lib/api";
 import chatResponses from "@/mocks/chat.json";
 
-const RESPONSES = chatResponses.responses as Record<string, string>;
+const FALLBACK_RESPONSES = chatResponses.responses as Record<string, string>;
 const TYPING_INTERVAL_MS = 10;
 
 const SUGGESTED_PROMPTS = [
@@ -17,19 +18,19 @@ const SUGGESTED_PROMPTS = [
   { label: "Calendar events", icon: Calendar, query: "What's on my calendar this week?" },
 ];
 
-function pickResponse(input: string): string {
+function pickFallbackResponse(input: string): string {
   const lower = input.toLowerCase();
-  if (lower.includes("overspend")) return RESPONSES.overspend ?? "Based on your patterns...";
+  if (lower.includes("overspend")) return FALLBACK_RESPONSES.overspend ?? "Based on your patterns...";
   if (lower.includes("afford") && (lower.includes("weekend") || lower.includes("out")))
-    return RESPONSES.afford_weekend ?? "You can afford it if...";
-  if (lower.includes("trigger")) return RESPONSES.trigger ?? "Your biggest trigger is...";
-  if (lower.includes("savings") || lower.includes("goal")) return RESPONSES.savings_goal ?? "A good savings goal...";
-  if (lower.includes("weekend") || lower.includes("spend this week")) return RESPONSES.afford_weekend ?? "This weekend you might spend...";
+    return FALLBACK_RESPONSES.afford_weekend ?? "You can afford it if...";
+  if (lower.includes("trigger")) return FALLBACK_RESPONSES.trigger ?? "Your biggest trigger is...";
+  if (lower.includes("savings") || lower.includes("goal")) return FALLBACK_RESPONSES.savings_goal ?? "A good savings goal...";
+  if (lower.includes("weekend") || lower.includes("spend this week")) return FALLBACK_RESPONSES.afford_weekend ?? "This weekend you might spend...";
   if (lower.includes("challenge")) return "I can help you create a savings challenge. Try the Weekend Warrior or set a custom cap.";
   if (lower.includes("health") || lower.includes("score")) return "Your financial health score is looking good. Keep it up!";
   if (lower.includes("balance") || lower.includes("account")) return "Your projected balance this week is on track.";
   if (lower.includes("calendar")) return "You have a few events this week that may impact spending. Check your Calendar page.";
-  return RESPONSES.default ?? "I'm here to help with spending predictions, challenges, and calendar insights. Ask me anything!";
+  return FALLBACK_RESPONSES.default ?? "I'm here to help with spending predictions, challenges, and calendar insights. Ask me anything!";
 }
 
 export default function CoachPage() {
@@ -78,18 +79,46 @@ export default function CoachPage() {
     setInput("");
     setLoading(true);
 
-    setTimeout(() => {
-      const reply = pickResponse(trimmed);
-      const assistantMsg: ChatMessage = {
-        id: `a-${Date.now()}`,
-        role: "assistant",
-        content: "",
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-      setLoading(false);
-      setStreaming({ messageId: assistantMsg.id, fullText: reply });
-    }, 800);
+    const useApi = !!process.env.NEXT_PUBLIC_API_URL;
+    if (useApi) {
+      api
+        .coachChat(trimmed)
+        .then((res) => {
+          const assistantMsg: ChatMessage = {
+            id: res.reply.id || `a-${Date.now()}`,
+            role: "assistant",
+            content: "",
+            timestamp: res.reply.timestamp || new Date().toISOString(),
+          };
+          setMessages((prev) => [...prev, assistantMsg]);
+          setStreaming({ messageId: assistantMsg.id, fullText: res.reply.content });
+        })
+        .catch(() => {
+          const reply = pickFallbackResponse(trimmed);
+          const assistantMsg: ChatMessage = {
+            id: `a-${Date.now()}`,
+            role: "assistant",
+            content: "",
+            timestamp: new Date().toISOString(),
+          };
+          setMessages((prev) => [...prev, assistantMsg]);
+          setStreaming({ messageId: assistantMsg.id, fullText: reply });
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setTimeout(() => {
+        const reply = pickFallbackResponse(trimmed);
+        const assistantMsg: ChatMessage = {
+          id: `a-${Date.now()}`,
+          role: "assistant",
+          content: "",
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+        setLoading(false);
+        setStreaming({ messageId: assistantMsg.id, fullText: reply });
+      }, 800);
+    }
   }, []);
 
   return (

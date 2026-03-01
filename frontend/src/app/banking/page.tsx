@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   CreditCard,
   Lock,
@@ -24,6 +24,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { PageShell } from "@/components/layout/PageShell";
+import { api } from "@/lib/api";
 import bankDataJson from "@/mocks/banking.json";
 
 const categoryIcons: Record<string, string> = {
@@ -54,28 +55,64 @@ type BankData = {
   nomiInsights: Array<{ category: string; thisMonth: number; lastMonth: number; trend: string; change: number }>;
 };
 
-const bankData = bankDataJson as BankData;
+const fallbackBank = bankDataJson as BankData;
 
 export default function BankingPage() {
-  const [vaultAmount, setVaultAmount] = useState(bankData.vaultAmount);
+  const [balance, setBalance] = useState(fallbackBank.balance);
+  const [vaultAmount, setVaultAmount] = useState(fallbackBank.vaultAmount);
   const [vaultInput, setVaultInput] = useState("");
   const [vaultMode, setVaultMode] = useState<"add" | "remove" | null>(null);
   const [showVaultConfirm, setShowVaultConfirm] = useState(false);
+  const [loading, setLoading] = useState(!!process.env.NEXT_PUBLIC_API_URL);
 
-  const available = bankData.balance - vaultAmount;
+  const fetchSummary = useCallback(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) return;
+    api
+      .bankSummary()
+      .then((s) => {
+        setBalance(s.total);
+        setVaultAmount(s.vaults?.default ?? 0);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      setLoading(false);
+      return;
+    }
+    fetchSummary();
+  }, [fetchSummary]);
+
+  const available = balance - vaultAmount;
+  const bankData = { ...fallbackBank, balance, vaultAmount, availableBalance: available };
 
   const handleVaultChange = (mode: "add" | "remove") => {
     const amt = parseFloat(vaultInput);
     if (isNaN(amt) || amt <= 0) return;
-    if (mode === "add") {
-      setVaultAmount((prev) => Math.min(prev + amt, bankData.balance));
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      const fn = mode === "add" ? api.bankLock : api.bankUnlock;
+      fn(amt, "default", mode === "add" ? "savings" : "withdrawal")
+        .then((res) => {
+          if (res.ok !== false) {
+            setShowVaultConfirm(true);
+            setTimeout(() => setShowVaultConfirm(false), 3000);
+            fetchSummary();
+          }
+        })
+        .catch(() => {});
     } else {
-      setVaultAmount((prev) => Math.max(prev - amt, 0));
+      if (mode === "add") {
+        setVaultAmount((prev) => Math.min(prev + amt, balance));
+      } else {
+        setVaultAmount((prev) => Math.max(prev - amt, 0));
+      }
+      setShowVaultConfirm(true);
+      setTimeout(() => setShowVaultConfirm(false), 3000);
     }
     setVaultInput("");
     setVaultMode(null);
-    setShowVaultConfirm(true);
-    setTimeout(() => setShowVaultConfirm(false), 3000);
   };
 
   const nomiChartData = bankData.nomiInsights.map((insight) => ({
@@ -83,6 +120,16 @@ export default function BankingPage() {
     thisMonth: insight.thisMonth,
     lastMonth: insight.lastMonth,
   }));
+
+  if (loading && process.env.NEXT_PUBLIC_API_URL) {
+    return (
+      <PageShell>
+        <div className="p-6 flex items-center justify-center min-h-[200px]">
+          <p className="text-slate-500">Loading bank summary...</p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>
