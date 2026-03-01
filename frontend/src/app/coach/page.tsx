@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Send } from "lucide-react";
+import { Send, MessageCircle } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { ChatWindow, type ChatMessage } from "@/components/coach/ChatWindow";
 import { PromptChips } from "@/components/coach/PromptChips";
@@ -60,7 +60,10 @@ export default function CoachPage() {
     <PageShell>
       <div className="flex h-[calc(100vh-3.5rem)] flex-col p-4 md:p-6">
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-slate-900">AI Coach</h1>
+          <h1 className="flex items-center gap-2.5 text-2xl font-bold text-slate-900">
+          <MessageCircle className="h-6 w-6 text-primary-600" aria-hidden />
+          AI Coach
+        </h1>
           <p className="text-slate-600">Ask about your spending and savings</p>
         </div>
 

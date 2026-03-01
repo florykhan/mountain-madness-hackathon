@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Trophy } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { ChallengeCard } from "@/components/challenges/ChallengeCard";
 import { CreateChallengeModal } from "@/components/challenges/CreateChallengeModal";
@@ -38,7 +38,10 @@ export default function ChallengesPage() {
       <div className="p-4 md:p-6 lg:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Challenges</h1>
+            <h1 className="flex items-center gap-2.5 text-2xl font-bold text-slate-900">
+              <Trophy className="h-6 w-6 text-primary-600" aria-hidden />
+              Challenges
+            </h1>
             <p className="text-slate-600">Save with friends and earn badges</p>
           </div>
           <Button onClick={() => setModalOpen(true)} className="gap-2">

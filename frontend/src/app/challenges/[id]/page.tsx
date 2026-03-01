@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trophy } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { Leaderboard } from "@/components/challenges/Leaderboard";
 import { BadgesGrid } from "@/components/challenges/BadgesGrid";
@@ -52,7 +52,10 @@ export default async function ChallengeDetailPage({ params }: Params) {
         </Link>
 
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">{challenge.name}</h1>
+          <h1 className="flex items-center gap-2.5 text-2xl font-bold text-slate-900">
+          <Trophy className="h-6 w-6 text-primary-600" aria-hidden />
+          {challenge.name}
+        </h1>
           {challenge.description && (
             <p className="mt-1 text-slate-600">{challenge.description}</p>
           )}
