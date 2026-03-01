@@ -11,21 +11,32 @@ export const NAV_LINKS = [
 ] as const;
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  food: "#10b981",
-  transport: "#3b82f6",
-  social: "#8b5cf6",
-  shopping: "#f59e0b",
-  health: "#ec4899",
+  food: "#2E90FA",
+  transport: "#10A861",
+  social: "#F79009",
+  shopping: "#875BF7",
+  health: "#EC2222",
+  entertainment: "#06AED4",
   work: "#6366f1",
-  subscriptions: "#64748b",
-  other: "#94a3b8",
+  subscriptions: "#737373",
+  other: "#9E9E9E",
 };
 
 export const RISK_COLORS = {
-  LOW: "#10b981",
-  MED: "#f59e0b",
-  HIGH: "#ef4444",
+  LOW: "#10A861",
+  MED: "#F79009",
+  HIGH: "#EC2222",
 } as const;
+
+/** Shared Recharts tooltip style — dark theme, used across all chart pages. */
+export const CHART_TOOLTIP_STYLE: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  background: "#1c1c20",
+  border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: 8,
+  color: "#e4e4e7",
+};
 
 export const SUGGESTED_PROMPTS = [
   "Why did I overspend this month?",

@@ -22,7 +22,14 @@ import {
   ChatCircle,
 } from "@phosphor-icons/react";
 import { PageShell } from "@/components/layout/PageShell";
+import { CashflowSankey } from "@/components/dashboard/CashflowSankey";
 import { api } from "@/lib/api";
+import { CHART_TOOLTIP_STYLE } from "@/lib/constants";
+import {
+  buildSankeyFromForecast,
+  parseSankeyResponse,
+  type SankeyData,
+} from "@/lib/sankey";
 import { getDashboardTypographyVars } from "@/lib/typography";
 import forecastData from "@/mocks/forecast.json";
 
@@ -60,17 +67,12 @@ const fallbackChallenges = [
   { id: "c2", name: "Dining Out Diet", current: 45, target: 180, reward: 400 },
 ];
 
-const categoryColors: Record<string, string> = {
-  Food: "#2E90FA",
-  Transport: "#10A861",
-  Social: "#F79009",
-  Shopping: "#875BF7",
-  Subscriptions: "#737373",
-};
-
 export default function DashboardPage() {
   const [forecast, setForecast] = useState(fallbackForecast);
   const [activeChallenges, setActiveChallenges] = useState(fallbackChallenges);
+  const [sankeyData, setSankeyData] = useState<SankeyData>(
+    buildSankeyFromForecast(fallbackForecast)
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,10 +80,31 @@ export default function DashboardPage() {
       setLoading(false);
       return;
     }
-    api
+
+    // Try to load Sankey data from dedicated endpoint first (pluggable),
+    // fall back to transforming forecast data client-side.
+    const sankeyPromise = api
+      .getSankey()
+      .then((raw) => {
+        const parsed = parseSankeyResponse(raw);
+        if (parsed) setSankeyData(parsed);
+      })
+      .catch(() => {
+        // Backend doesn't have Sankey endpoint yet — will build from forecast
+      });
+
+    const dashboardPromise = api
       .getDashboard()
       .then((data) => {
         setForecast(data.forecast);
+        // Build Sankey from forecast as fallback
+        setSankeyData((prev) => {
+          // Only overwrite if we didn't get dedicated Sankey data
+          if (prev === buildSankeyFromForecast(fallbackForecast)) {
+            return buildSankeyFromForecast(data.forecast);
+          }
+          return prev;
+        });
         const list = data.challenges?.list ?? [];
         if (list.length > 0) {
           setActiveChallenges(
@@ -100,19 +123,14 @@ export default function DashboardPage() {
       .catch(() => {
         setForecast(fallbackForecast);
         setActiveChallenges(fallbackChallenges);
-      })
-      .finally(() => setLoading(false));
+      });
+
+    Promise.allSettled([sankeyPromise, dashboardPromise]).finally(() =>
+      setLoading(false)
+    );
   }, []);
 
   const score = currentUser.healthScore;
-
-  const pieData = (forecast.byCategory ?? []).map((c) => ({
-    name: c.name,
-    value: c.value,
-    color: categoryColors[c.name] ?? "#737373",
-  }));
-
-  const totalCategorySpend = pieData.reduce((s, c) => s + c.value, 0);
 
   if (loading) {
     return (
@@ -336,14 +354,7 @@ export default function DashboardPage() {
                   tickLine={false}
                 />
                 <Tooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    background: "#1c1c20",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 8,
-                    color: "#e4e4e7",
-                  }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
                   formatter={(value: unknown, name: string) => [
                     value != null ? `$${value}` : "In progress",
                     name === "predicted" ? "Predicted" : "Actual",
@@ -384,9 +395,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Category Breakdown */}
+          {/* Cash Flow Sankey */}
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-base text-gray-200 font-medium">
                 This Week
               </h3>
@@ -398,53 +409,15 @@ export default function DashboardPage() {
                 <ArrowRight size={14} weight="bold" aria-hidden="true" />
               </Link>
             </div>
-
-            {/* Horizontal stacked bar */}
-            <div className="h-2.5 rounded-full overflow-hidden flex mb-5">
-              {pieData.map((item) => (
-                <div
-                  key={item.name}
-                  className="h-full first:rounded-l-full last:rounded-r-full"
-                  style={{
-                    width: `${(item.value / totalCategorySpend) * 100}%`,
-                    backgroundColor: item.color,
-                    opacity: 0.75,
-                  }}
-                />
-              ))}
+            <div className="h-[260px]">
+              <CashflowSankey data={sankeyData} />
             </div>
-
-            <div className="space-y-3">
-              {pieData.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{
-                        backgroundColor: item.color,
-                        opacity: 0.75,
-                      }}
-                    />
-                    <span className="text-sm text-gray-400 font-medium">
-                      {item.name}
-                    </span>
-                  </div>
-                  <span className="text-sm font-mono text-gray-200 tabular-nums font-medium">
-                    ${item.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between">
+            <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
               <span className="text-sm text-gray-500 font-medium">
-                Total
+                Predicted
               </span>
               <span className="text-lg font-mono font-medium text-gray-100 tabular-nums">
-                ${totalCategorySpend}
+                ${forecast.next7DaysTotal}
               </span>
             </div>
           </div>
@@ -577,14 +550,7 @@ export default function DashboardPage() {
                   tickLine={false}
                 />
                 <Tooltip
-                  contentStyle={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    background: "#1c1c20",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 8,
-                    color: "#e4e4e7",
-                  }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
                   formatter={(v: number) => [`${v}/100`, "Health Score"]}
                 />
                 <Area

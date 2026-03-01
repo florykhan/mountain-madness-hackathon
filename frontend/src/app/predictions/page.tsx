@@ -27,14 +27,12 @@ import { getDashboardTypographyVars } from "@/lib/typography";
 import eventsData from "@/mocks/events.json";
 import predictionsData from "@/mocks/predictions.json";
 
+import { CATEGORY_COLORS, CHART_TOOLTIP_STYLE } from "@/lib/constants";
+
 const categoryColors: Record<string, string> = {
-  food: "#2E90FA",
-  meal: "#2E90FA",
-  entertainment: "#F79009",
-  transport: "#10A861",
-  coffee: "#875BF7",
-  health: "#06AED4",
-  other: "#737373",
+  ...CATEGORY_COLORS,
+  meal: CATEGORY_COLORS.food,
+  coffee: CATEGORY_COLORS.shopping,
 };
 
 type EventRow = {
@@ -485,14 +483,7 @@ export default function PredictionsPage() {
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      background: "#1c1c20",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: 8,
-                      color: "#e4e4e7",
-                    }}
+                    contentStyle={CHART_TOOLTIP_STYLE}
                     formatter={(v: unknown) => [`$${v}`, ""]}
                   />
                   <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={14}>

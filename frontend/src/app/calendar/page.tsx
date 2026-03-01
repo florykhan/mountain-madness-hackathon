@@ -61,28 +61,28 @@ const CALENDAR_COLORS: Record<
   { bg: string; border: string; text: string; dot: string }
 > = {
   work: {
-    bg: "bg-blue-500/10",
-    border: "border-blue-500/25",
-    text: "text-blue-400",
-    dot: "bg-blue-500",
+    bg: "bg-accent-blue/10",
+    border: "border-accent-blue/25",
+    text: "text-accent-blue",
+    dot: "bg-accent-blue",
   },
   personal: {
-    bg: "bg-zinc-400/10",
-    border: "border-zinc-400/25",
-    text: "text-zinc-300",
-    dot: "bg-zinc-400",
+    bg: "bg-gray-400/10",
+    border: "border-gray-400/25",
+    text: "text-gray-300",
+    dot: "bg-gray-400",
   },
   social: {
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/25",
-    text: "text-violet-400",
-    dot: "bg-violet-500",
+    bg: "bg-accent-purple/10",
+    border: "border-accent-purple/25",
+    text: "text-accent-purple",
+    dot: "bg-accent-purple",
   },
   health: {
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/25",
-    text: "text-emerald-400",
-    dot: "bg-emerald-500",
+    bg: "bg-success/10",
+    border: "border-success/25",
+    text: "text-success",
+    dot: "bg-success",
   },
 };
 
@@ -93,10 +93,10 @@ const eventCardVariants = cva(
   {
     variants: {
       color: {
-        work: "border-blue-500/30 bg-blue-500/15 text-blue-300",
-        personal: "border-zinc-500/30 bg-zinc-500/15 text-zinc-300",
-        social: "border-violet-500/30 bg-violet-500/15 text-violet-300",
-        health: "border-emerald-500/30 bg-emerald-500/15 text-emerald-300",
+        work: "border-accent-blue/30 bg-accent-blue/15 text-accent-blue",
+        personal: "border-gray-500/30 bg-gray-500/15 text-gray-300",
+        social: "border-accent-purple/30 bg-accent-purple/15 text-accent-purple",
+        health: "border-success/30 bg-success/15 text-success",
       },
     },
     defaultVariants: {
@@ -297,7 +297,7 @@ export default function CalendarPage() {
     return (
       <PageShell>
         <div className="flex min-h-[400px] items-center justify-center p-6">
-          <div className="flex items-center gap-3 text-[var(--text-tertiary)]">
+          <div className="flex items-center gap-3 text-gray-500">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
             <span className="text-sm">Loading calendar...</span>
           </div>
@@ -315,7 +315,7 @@ export default function CalendarPage() {
             <button
               type="button"
               onClick={goToToday}
-              className="rounded-lg border border-[var(--border-default)] bg-[var(--bg-secondary)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              className="rounded-lg border border-white/[0.09] bg-surface-1 px-3 py-1.5 text-xs font-medium text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
             >
               Today
             </button>
@@ -324,30 +324,30 @@ export default function CalendarPage() {
               <button
                 type="button"
                 onClick={goToPreviousWeek}
-                className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.09] bg-surface-1 text-gray-500 transition-colors hover:bg-white/[0.06] hover:text-white"
               >
                 <CaretLeft className="h-4 w-4" />
               </button>
               <button
                 type="button"
                 onClick={goToNextWeek}
-                className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.09] bg-surface-1 text-gray-500 transition-colors hover:bg-white/[0.06] hover:text-white"
               >
                 <CaretRight className="h-4 w-4" />
               </button>
             </div>
 
-            <h2 className="text-base font-semibold text-[var(--text-primary)]">
+            <h2 className="text-base font-semibold text-white">
               {weekLabel}
             </h2>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-3 py-1.5">
-              <CurrencyDollar className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
-              <span className="text-xs text-[var(--text-secondary)]">
+            <div className="flex items-center gap-1.5 rounded-lg border border-white/[0.06] bg-surface-1 px-3 py-1.5">
+              <CurrencyDollar className="h-3.5 w-3.5 text-gray-500" />
+              <span className="text-xs text-gray-400">
                 Week total:{" "}
-                <span className="font-semibold tabular-nums text-[var(--text-primary)]">
+                <span className="font-semibold tabular-nums text-white">
                   ${totalPredicted}
                 </span>
               </span>
@@ -369,7 +369,7 @@ export default function CalendarPage() {
                   "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
                   active
                     ? `${colors.bg} ${colors.border} ${colors.text}`
-                    : "border-[var(--border-subtle)] bg-transparent text-[var(--text-muted)] hover:border-[var(--border-default)] hover:text-[var(--text-tertiary)]"
+                    : "border-white/[0.06] bg-transparent text-gray-600 hover:border-white/[0.09] hover:text-gray-500"
                 )}
               >
                 <div
@@ -387,7 +387,7 @@ export default function CalendarPage() {
         {/* ─── Calendar grid ─── */}
         <div className="flex min-h-0 flex-1 gap-4">
           {/* Week view */}
-          <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+          <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-white/[0.06] bg-surface-1">
             {/* Single scroll container — header is sticky so columns always align */}
             <div
               ref={scrollRef}
@@ -397,9 +397,9 @@ export default function CalendarPage() {
               <table className="w-full border-collapse" style={{ minWidth: 700 }}>
                 {/* Sticky day headers */}
                 <thead>
-                  <tr className="sticky top-0 z-20 bg-[var(--bg-secondary)]">
+                  <tr className="sticky top-0 z-20 bg-surface-1">
                     <th
-                      className="w-14 min-w-[56px] border-b border-[var(--border-subtle)]"
+                      className="w-14 min-w-[56px] border-b border-white/[0.06]"
                       aria-label="Time"
                     />
                     {weekDays.map((day, i) => {
@@ -408,7 +408,7 @@ export default function CalendarPage() {
                         <th
                           key={day.toISOString()}
                           className={cn(
-                            "border-b border-l border-[var(--border-subtle)] py-3 text-center font-normal",
+                            "border-b border-l border-white/[0.06] py-3 text-center font-normal",
                             i === 6 && "border-r-0"
                           )}
                         >
@@ -417,7 +417,7 @@ export default function CalendarPage() {
                               "block text-xs font-medium",
                               today
                                 ? "text-accent-blue"
-                                : "text-[var(--text-muted)]"
+                                : "text-gray-600"
                             )}
                           >
                             {format(day, "EEE")}
@@ -427,7 +427,7 @@ export default function CalendarPage() {
                               "mx-auto mt-1 flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold",
                               today
                                 ? "bg-accent-blue text-white"
-                                : "text-[var(--text-primary)]"
+                                : "text-white"
                             )}
                           >
                             {format(day, "d")}
@@ -448,7 +448,7 @@ export default function CalendarPage() {
                         style={{ height: `${HOUR_HEIGHT}px` }}
                       >
                         {hourIndex !== 0 && (
-                          <span className="absolute -top-2.5 right-3 text-xs font-medium text-[var(--text-muted)]">
+                          <span className="absolute -top-2.5 right-3 text-xs font-medium text-gray-600">
                             {formatHour(hour)}
                           </span>
                         )}
@@ -462,15 +462,15 @@ export default function CalendarPage() {
                         return (
                           <td
                             key={`${day.toISOString()}-${hour}`}
-                            className="relative border-l border-[var(--border-subtle)] p-0"
+                            className="relative border-l border-white/[0.06] p-0"
                             style={{ height: `${HOUR_HEIGHT}px` }}
                           >
                             {/* Hour line */}
                             {hourIndex !== 0 && (
-                              <div className="absolute inset-x-0 top-0 border-t border-[var(--border-subtle)]" />
+                              <div className="absolute inset-x-0 top-0 border-t border-white/[0.06]" />
                             )}
                             {/* Half-hour dashed line */}
-                            <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-[var(--border-subtle)] opacity-30" />
+                            <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-white/[0.06] opacity-30" />
 
                             {/* Render all events for this day-column in the first row */}
                             {isFirstHour && (() => {
@@ -552,7 +552,7 @@ export default function CalendarPage() {
           <div className="w-64 flex-shrink-0 space-y-4">
             {/* Event detail card */}
             {selectedEvent ? (
-              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
+              <div className="rounded-xl border border-white/[0.06] bg-surface-1 p-4">
                 <div className="mb-3 flex items-start justify-between">
                   <div
                     className={cn(
@@ -573,26 +573,26 @@ export default function CalendarPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedEvent(null)}
-                    className="flex h-5 w-5 items-center justify-center rounded text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-secondary)]"
+                    className="flex h-5 w-5 items-center justify-center rounded text-gray-600 transition-colors hover:bg-white/[0.06] hover:text-gray-400"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
 
-                <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+                <h3 className="mb-3 text-sm font-semibold text-white">
                   {selectedEvent.title}
                 </h3>
 
                 <div className="space-y-2.5">
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                    <Clock className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <Clock className="h-3.5 w-3.5 text-gray-600" />
                     <span>
                       {format(parseISO(selectedEvent.start), "EEE, MMM d")} at{" "}
                       {format(parseISO(selectedEvent.start), "h:mm a")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                    <CalendarDots className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <CalendarDots className="h-3.5 w-3.5 text-gray-600" />
                     <span>
                       {differenceInMinutes(
                         parseISO(selectedEvent.end),
@@ -603,8 +603,8 @@ export default function CalendarPage() {
                   </div>
                   {selectedEvent.predictedSpend > 0 && (
                     <div className="flex items-center gap-2 text-xs">
-                      <CurrencyDollar className="h-3.5 w-3.5 text-[var(--text-muted)]" />
-                      <span className="font-medium text-[var(--text-primary)]">
+                      <CurrencyDollar className="h-3.5 w-3.5 text-gray-600" />
+                      <span className="font-medium text-white">
                         Predicted: ${selectedEvent.predictedSpend}
                       </span>
                     </div>
@@ -612,12 +612,12 @@ export default function CalendarPage() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
+              <div className="rounded-xl border border-white/[0.06] bg-surface-1 p-4">
                 <div className="flex flex-col items-center gap-2 py-4 text-center">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-hover)]">
-                    <CalendarDots className="h-5 w-5 text-[var(--text-muted)]" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.06]">
+                    <CalendarDots className="h-5 w-5 text-gray-600" />
                   </div>
-                  <p className="text-xs text-[var(--text-tertiary)]">
+                  <p className="text-xs text-gray-500">
                     Click an event to view details
                   </p>
                 </div>
@@ -625,8 +625,8 @@ export default function CalendarPage() {
             )}
 
             {/* Week summary */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <div className="rounded-xl border border-white/[0.06] bg-surface-1 p-4">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-600">
                 Week Summary
               </h3>
 
@@ -648,17 +648,17 @@ export default function CalendarPage() {
                         <div
                           className={cn("h-2 w-2 rounded-full", colors.dot)}
                         />
-                        <span className="text-xs text-[var(--text-secondary)]">
+                        <span className="text-xs text-gray-400">
                           {label}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-[var(--text-muted)]">
+                        <span className="text-xs text-gray-600">
                           {typeEvents.length} event
                           {typeEvents.length !== 1 ? "s" : ""}
                         </span>
                         {spend > 0 && (
-                          <span className="tabular-nums text-xs font-medium text-[var(--text-primary)]">
+                          <span className="tabular-nums text-xs font-medium text-white">
                             ${spend}
                           </span>
                         )}
@@ -667,12 +667,12 @@ export default function CalendarPage() {
                   );
                 })}
 
-                <div className="mt-3 border-t border-[var(--border-subtle)] pt-3">
+                <div className="mt-3 border-t border-white/[0.06] pt-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-[var(--text-tertiary)]">
+                    <span className="text-xs font-medium text-gray-500">
                       Total predicted
                     </span>
-                    <span className="tabular-nums text-sm font-semibold text-[var(--text-primary)]">
+                    <span className="tabular-nums text-sm font-semibold text-white">
                       ${totalPredicted}
                     </span>
                   </div>

@@ -27,6 +27,7 @@ import {
 } from "recharts";
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";
+import { CATEGORY_COLORS, CHART_TOOLTIP_STYLE } from "@/lib/constants";
 import { getDashboardTypographyVars } from "@/lib/typography";
 import bankDataJson from "@/mocks/banking.json";
 
@@ -40,13 +41,11 @@ const categoryIcons: Record<string, string> = {
 };
 
 const categoryColors: Record<string, string> = {
-  coffee: "#875BF7",
-  transport: "#10A861",
+  ...CATEGORY_COLORS,
+  coffee: CATEGORY_COLORS.shopping,
   groceries: "#06AED4",
-  income: "#10A861",
-  entertainment: "#F79009",
-  meal: "#2E90FA",
-  other: "#737373",
+  income: CATEGORY_COLORS.transport,
+  meal: CATEGORY_COLORS.food,
 };
 
 type BankData = {
@@ -146,7 +145,7 @@ export default function BankingPage() {
     return (
       <PageShell>
         <div className="p-4 flex items-center justify-center min-h-[200px]">
-          <p className="text-zinc-500 text-sm font-medium">
+          <p className="text-gray-500 text-sm font-medium">
             Loading bank summary...
           </p>
         </div>
@@ -160,7 +159,7 @@ export default function BankingPage() {
   return (
     <PageShell>
       <div
-        className="p-4 lg:p-6 space-y-4 dashboard-typography"
+        className="p-6 lg:p-8 space-y-6 dashboard-typography"
         style={getDashboardTypographyVars() as CSSProperties}
       >
         {/* Header */}
@@ -170,10 +169,10 @@ export default function BankingPage() {
               <CreditCard className="w-4.5 h-4.5 text-accent-blue" />
             </div>
             <div>
-              <h2 className="text-zinc-100 text-base font-semibold tracking-tight">
+              <h2 className="text-gray-100 text-base font-semibold tracking-tight">
                 RBC Banking
               </h2>
-              <p className="text-xs text-zinc-500 font-medium">
+              <p className="text-xs text-gray-500 font-medium">
                 Mock integration · Nomi-enhanced
               </p>
             </div>
@@ -194,18 +193,18 @@ export default function BankingPage() {
           {/* Total Balance */}
           <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Wallet className="w-4 h-4 text-zinc-500" />
-              <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider">
+              <Wallet className="w-4 h-4 text-gray-500" />
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
                 {bankData.accountName}
               </p>
             </div>
-            <div className="text-2xl font-semibold text-zinc-100 font-mono tabular-nums">
+            <div className="text-2xl font-semibold text-gray-100 font-mono tabular-nums">
               $
               {bankData.balance.toLocaleString("en-CA", {
                 minimumFractionDigits: 2,
               })}
             </div>
-            <p className="text-sm text-zinc-500 mt-1 font-medium">
+            <p className="text-sm text-gray-500 mt-1 font-medium">
               Total Balance
             </p>
             <div className="mt-3 flex items-center gap-2">
@@ -215,7 +214,7 @@ export default function BankingPage() {
                   style={{ width: `${availPercent}%` }}
                 />
               </div>
-              <span className="text-xs text-zinc-400 font-mono font-medium tabular-nums">
+              <span className="text-xs text-gray-400 font-mono font-medium tabular-nums">
                 {availPercent}% free
               </span>
             </div>
@@ -227,17 +226,17 @@ export default function BankingPage() {
               <div className="w-7 h-7 bg-success-muted rounded-md flex items-center justify-center">
                 <LockOpen className="w-3.5 h-3.5 text-success" />
               </div>
-              <span className="text-sm text-zinc-400 font-medium">
+              <span className="text-sm text-gray-400 font-medium">
                 Available
               </span>
             </div>
-            <div className="text-2xl text-zinc-100 font-semibold font-mono tabular-nums">
+            <div className="text-2xl text-gray-100 font-semibold font-mono tabular-nums">
               $
               {available.toLocaleString("en-CA", {
                 minimumFractionDigits: 2,
               })}
             </div>
-            <p className="text-xs text-zinc-500 mt-1 font-medium">
+            <p className="text-xs text-gray-500 mt-1 font-medium">
               Free to spend
             </p>
           </div>
@@ -248,7 +247,7 @@ export default function BankingPage() {
               <div className="w-7 h-7 bg-success-muted rounded-md flex items-center justify-center">
                 <Lock className="w-3.5 h-3.5 text-success" />
               </div>
-              <span className="text-sm text-zinc-400 font-medium">
+              <span className="text-sm text-gray-400 font-medium">
                 Savings Vault
               </span>
             </div>
@@ -258,7 +257,7 @@ export default function BankingPage() {
                 minimumFractionDigits: 2,
               })}
             </div>
-            <p className="text-xs text-zinc-500 mt-1 font-medium">
+            <p className="text-xs text-gray-500 mt-1 font-medium">
               Locked for savings
             </p>
           </div>
@@ -272,10 +271,10 @@ export default function BankingPage() {
           {/* Transactions */}
           <div className="lg:col-span-2 bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="px-4 py-3 border-b border-white/[0.06] flex items-center justify-between">
-              <h3 className="text-sm text-zinc-200 font-semibold">
+              <h3 className="text-sm text-gray-200 font-semibold">
                 Recent Transactions
               </h3>
-              <span className="text-xs text-zinc-600 font-mono">
+              <span className="text-xs text-gray-600 font-mono">
                 Last 8 transactions
               </span>
             </div>
@@ -296,10 +295,10 @@ export default function BankingPage() {
                       {icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-zinc-100 font-medium">
+                      <p className="text-sm text-gray-100 font-medium">
                         {tx.merchant}
                       </p>
-                      <p className="text-xs text-zinc-600 mt-0.5 font-mono">
+                      <p className="text-xs text-gray-600 mt-0.5 font-mono">
                         {tx.date} · {tx.category}
                       </p>
                     </div>
@@ -307,20 +306,20 @@ export default function BankingPage() {
                       <div>
                         <p
                           className={`text-sm font-semibold font-mono tabular-nums ${
-                            isIncome ? "text-success" : "text-zinc-100"
+                            isIncome ? "text-success" : "text-gray-100"
                           }`}
                         >
                           {isIncome ? "+" : ""}$
                           {Math.abs(tx.amount).toFixed(2)}
                         </p>
-                        <p className="text-xs text-zinc-600 font-mono tabular-nums">
+                        <p className="text-xs text-gray-600 font-mono tabular-nums">
                           bal: ${tx.balance.toFixed(2)}
                         </p>
                       </div>
                       {isIncome ? (
                         <ArrowDownLeft className="w-3.5 h-3.5 text-success flex-shrink-0" />
                       ) : (
-                        <ArrowUpRight className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-gray-600 flex-shrink-0" />
                       )}
                     </div>
                   </div>
@@ -335,7 +334,7 @@ export default function BankingPage() {
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheck className="w-4 h-4 text-success" />
-                <h3 className="text-zinc-100 font-semibold text-sm">
+                <h3 className="text-gray-100 font-semibold text-sm">
                   Savings Vault
                 </h3>
               </div>
@@ -373,7 +372,7 @@ export default function BankingPage() {
                     <span className="text-sm text-success font-semibold font-mono">
                       {vaultPercent}%
                     </span>
-                    <span className="text-xs text-zinc-600 font-medium">
+                    <span className="text-xs text-gray-600 font-medium">
                       locked
                     </span>
                   </div>
@@ -387,7 +386,7 @@ export default function BankingPage() {
                     minimumFractionDigits: 2,
                   })}
                 </p>
-                <p className="text-xs text-zinc-500 font-medium">
+                <p className="text-xs text-gray-500 font-medium">
                   locked in vault
                 </p>
               </div>
@@ -426,7 +425,7 @@ export default function BankingPage() {
                     value={vaultInput}
                     onChange={(e) => setVaultInput(e.target.value)}
                     placeholder="Amount"
-                    className="flex-1 border border-white/[0.08] bg-surface-3 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-accent-blue/40 font-mono"
+                    className="flex-1 border border-white/[0.08] bg-surface-3 rounded-lg px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-accent-blue/40 font-mono"
                   />
                   <button
                     onClick={() => handleVaultChange(vaultMode)}
@@ -442,11 +441,11 @@ export default function BankingPage() {
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-4">
               <div className="flex items-center gap-2 mb-1">
                 <ChartBar className="w-4 h-4 text-accent-blue" />
-                <h3 className="text-zinc-100 font-semibold text-sm">
+                <h3 className="text-gray-100 font-semibold text-sm">
                   Nomi Insights
                 </h3>
               </div>
-              <p className="text-xs text-zinc-600 mb-3 font-medium">
+              <p className="text-xs text-gray-600 mb-3 font-medium">
                 This month vs last month
               </p>
               <ResponsiveContainer width="100%" height={130}>
@@ -466,14 +465,7 @@ export default function BankingPage() {
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{
-                      fontSize: 12,
-                      background: "#1c1c20",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: 8,
-                      color: "#e4e4e7",
-                      fontWeight: 500,
-                    }}
+                    contentStyle={CHART_TOOLTIP_STYLE}
                     formatter={(v: number) => [`$${v}`, ""]}
                   />
                   <Bar
@@ -496,7 +488,7 @@ export default function BankingPage() {
                     key={insight.category}
                     className="flex items-center justify-between"
                   >
-                    <span className="text-xs text-zinc-400 font-medium">
+                    <span className="text-xs text-gray-400 font-medium">
                       {insight.category}
                     </span>
                     <div className="flex items-center gap-1.5">

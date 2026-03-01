@@ -25,6 +25,7 @@ import {
 } from "recharts";
 import { PageShell } from "@/components/layout/PageShell";
 import { api } from "@/lib/api";
+import { CHART_TOOLTIP_STYLE } from "@/lib/constants";
 import { getDashboardTypographyVars } from "@/lib/typography";
 
 const COLORS = [
@@ -239,7 +240,7 @@ export default function LeaderboardPage() {
     if (rank === 3)
       return <Medal className="w-4 h-4 text-warning fill-warning" />;
     return (
-      <span className="text-sm text-zinc-500 w-4 text-center font-semibold font-mono tabular-nums">
+      <span className="text-sm text-gray-500 w-4 text-center font-semibold font-mono tabular-nums">
         {rank}
       </span>
     );
@@ -263,14 +264,14 @@ export default function LeaderboardPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Trophy className="w-5 h-5 text-warning-strong fill-warning-strong" />
-                  <span className="text-sm text-zinc-400 font-medium">
+                  <span className="text-sm text-gray-400 font-medium">
                     Active Group Challenge
                   </span>
                 </div>
                 <h2 className="text-white text-xl font-semibold tracking-tight mb-1">
                   {activeChallenge.name}
                 </h2>
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-gray-400">
                   Target: Stay under ${activeChallenge.target} this weekend
                 </p>
               </div>
@@ -278,7 +279,7 @@ export default function LeaderboardPage() {
                 <div className="text-xl text-white font-semibold font-mono tabular-nums">
                   {daysRemaining}d
                 </div>
-                <p className="text-sm text-zinc-500">remaining</p>
+                <p className="text-sm text-gray-500">remaining</p>
               </div>
             </div>
             <div className="mt-5 flex items-center gap-3">
@@ -293,7 +294,7 @@ export default function LeaderboardPage() {
                   </div>
                 ))}
               </div>
-              <span className="text-sm text-zinc-400">
+              <span className="text-sm text-gray-400">
                 {extendedLeaderboard.length} participants
               </span>
               <div className="ml-auto flex items-center gap-1.5">
@@ -317,8 +318,8 @@ export default function LeaderboardPage() {
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
                 activeTab === tab
-                  ? "bg-surface-4 text-zinc-100 shadow-border-xs"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  ? "bg-surface-4 text-gray-100 shadow-border-xs"
+                  : "text-gray-500 hover:text-gray-300"
               }`}
             >
               {tab === "current" ? "Current Challenge" : "All-Time Rankings"}
@@ -335,10 +336,10 @@ export default function LeaderboardPage() {
             {activeTab === "current" ? (
               <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
                 <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
-                  <h3 className="text-base font-medium text-zinc-200">
+                  <h3 className="text-base font-medium text-gray-200">
                     Weekend Warrior Rankings
                   </h3>
-                  <span className="text-sm text-zinc-500 bg-surface-3 px-2 py-1 rounded-md font-mono tabular-nums">
+                  <span className="text-sm text-gray-500 bg-surface-3 px-2 py-1 rounded-md font-mono tabular-nums">
                     Live
                   </span>
                 </div>
@@ -374,7 +375,7 @@ export default function LeaderboardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <p
-                              className={`text-sm text-zinc-100 ${
+                              className={`text-sm text-gray-100 ${
                                 isCurrentUser
                                   ? "font-bold"
                                   : "font-medium"
@@ -404,7 +405,7 @@ export default function LeaderboardPage() {
                           <p className="text-sm text-white font-semibold font-mono tabular-nums">
                             ${participant.spent}
                           </p>
-                          <p className="text-sm text-zinc-500 font-mono tabular-nums">
+                          <p className="text-sm text-gray-500 font-mono tabular-nums">
                             of ${participant.target}
                           </p>
                         </div>
@@ -433,7 +434,7 @@ export default function LeaderboardPage() {
             ) : (
               <div className="bg-surface-1 border border-white/[0.06] rounded-xl overflow-hidden">
                 <div className="px-5 py-4 border-b border-white/[0.06]">
-                  <h3 className="text-base font-medium text-zinc-200">
+                  <h3 className="text-base font-medium text-gray-200">
                     All-Time Points Leaderboard
                   </h3>
                 </div>
@@ -458,7 +459,7 @@ export default function LeaderboardPage() {
                       </div>
                       <div className="flex-1">
                         <p
-                          className={`text-sm text-zinc-100 ${
+                          className={`text-sm text-gray-100 ${
                             participant.isCurrentUser
                               ? "font-bold"
                               : "font-medium"
@@ -471,13 +472,13 @@ export default function LeaderboardPage() {
                             </span>
                           )}
                         </p>
-                        <p className="text-sm text-zinc-500">
+                        <p className="text-sm text-gray-500">
                           {participant.wins} challenge wins
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Star className="w-3.5 h-3.5 text-warning-strong fill-warning-strong" />
-                        <span className="text-sm text-zinc-200 font-semibold font-mono tabular-nums">
+                        <span className="text-sm text-gray-200 font-semibold font-mono tabular-nums">
                           {participant.points.toLocaleString()} pts
                         </span>
                       </div>
@@ -492,7 +493,7 @@ export default function LeaderboardPage() {
           <div className="space-y-4">
             {/* Chart */}
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-              <h3 className="text-base font-medium text-zinc-100 mb-4">
+              <h3 className="text-base font-medium text-gray-100 mb-4">
                 Spending Comparison
               </h3>
               <ResponsiveContainer width="100%" height={180}>
@@ -512,14 +513,7 @@ export default function LeaderboardPage() {
                     tickLine={false}
                   />
                   <Tooltip
-                    contentStyle={{
-                      fontSize: 12,
-                      background: "#1c1c20",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: 8,
-                      color: "#e4e4e7",
-                      fontWeight: 600,
-                    }}
+                    contentStyle={CHART_TOOLTIP_STYLE}
                     formatter={(v: number) => [`$${v}`, "Spent"]}
                   />
                   <ReferenceLine
@@ -539,7 +533,7 @@ export default function LeaderboardPage() {
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-              <div className="mt-2 flex items-center gap-2 text-sm text-zinc-500">
+              <div className="mt-2 flex items-center gap-2 text-sm text-gray-500">
                 <span className="border-t-2 border-dashed border-destructive w-3" />{" "}
                 Target: ${activeChallenge.target}
               </div>
@@ -547,7 +541,7 @@ export default function LeaderboardPage() {
 
             {/* Your Position */}
             <div className="bg-surface-1 border border-white/[0.06] rounded-xl p-5">
-              <h3 className="text-base font-medium text-zinc-100 mb-3">
+              <h3 className="text-base font-medium text-gray-100 mb-3">
                 Your Position
               </h3>
               <div className="flex items-center gap-3 mb-4">
@@ -558,14 +552,14 @@ export default function LeaderboardPage() {
                   <p className="text-sm text-white font-bold">
                     Rank #2 of 6
                   </p>
-                  <p className="text-sm text-zinc-500 font-mono tabular-nums">
+                  <p className="text-sm text-gray-500 font-mono tabular-nums">
                     $85 spent · $189 remaining
                   </p>
                 </div>
               </div>
               <div className="space-y-2.5 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 font-medium">
+                  <span className="text-gray-400 font-medium">
                     vs Jordan Lee (#1)
                   </span>
                   <span className="text-destructive flex items-center gap-1 font-semibold font-mono tabular-nums text-sm">
@@ -573,7 +567,7 @@ export default function LeaderboardPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 font-medium">
+                  <span className="text-gray-400 font-medium">
                     vs Sam Park (#3)
                   </span>
                   <span className="text-success flex items-center gap-1 font-semibold font-mono tabular-nums text-sm">
@@ -589,7 +583,7 @@ export default function LeaderboardPage() {
                 <Fire className="w-4 h-4 text-warning" />
                 <h3 className="text-base font-medium text-warning">AI Tip</h3>
               </div>
-              <p className="text-sm text-zinc-300 leading-relaxed">
+              <p className="text-sm text-gray-300 leading-relaxed">
                 Skip the Jazz Concert this Friday and you&apos;ll jump to{" "}
                 <strong className="text-white font-semibold">#1</strong> on the
                 leaderboard, saving $95 and putting you well under target!

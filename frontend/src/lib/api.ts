@@ -53,6 +53,14 @@ export async function healthCheck(): Promise<boolean> {
 }
 
 export const api = {
+  /** Cashflow Sankey data (pluggable — backend can return pre-built Sankey shape). */
+  getSankey: () =>
+    request<{
+      nodes: Array<{ name: string; value: number; percentage: number; color: string }>;
+      links: Array<{ source: number; target: number; value: number; color: string; percentage: number }>;
+      currencySymbol: string;
+    }>("/api/dashboard/sankey"),
+
   /** Full dashboard payload (events, forecast, insights, challenges). No auth required. */
   getDashboard: () =>
     request<{

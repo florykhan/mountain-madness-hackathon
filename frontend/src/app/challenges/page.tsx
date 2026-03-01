@@ -128,9 +128,14 @@ export default function ChallengesPage() {
   };
 
   const activeList = list.filter((c) => c.joined);
-  const totalPoints = 2340;
-  const challengesWon = "3 / 4";
-  const totalSaved = "$347";
+
+  // Derive stats from data where possible; fallback to mock values
+  // These will be replaced by backend-provided stats when available.
+  const wonCount = pastChallenges.filter((c) => c.status === "won").length;
+  const totalPast = pastChallenges.length;
+  const totalPoints = pastChallenges.reduce((s, c) => s + (c.status === "won" ? c.reward : 0), 0);
+  const challengesWon = `${wonCount} / ${totalPast}`;
+  const totalSaved = `$${pastChallenges.filter((c) => c.status === "won").reduce((s, c) => s + (c.target - c.actual), 0)}`;
 
   if (loading) {
     return (
