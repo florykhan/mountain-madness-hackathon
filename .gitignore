@@ -3,3 +3,15 @@ florykhan.github.io
 
 # Website features folder
 Website features overview/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+node_modules/
+.next/
